@@ -1,0 +1,84 @@
+/* style.css */
+
+/* --- Variables de couleurs (changez-les pour coller à votre thème !) --- */
+:root {
+    --primary-color: #4a6c6f; /* Un bleu-vert élégant */
+    --background-color: #f4f4f4; /* Un gris très clair pour le fond */
+    --text-color: #333333; /* Un gris foncé pour le texte */
+    --light-text-color: #ffffff; /* Texte blanc */
+}
+
+/* --- Styles généraux --- */
+body {
+    font-family: 'Montserrat', sans-serif; /* La police importée de Google Fonts */
+    background-color: var(--background-color);
+    color: var(--text-color);
+    line-height: 1.6;
+    margin: 0;
+    padding: 20px;
+    text-align: center;
+}
+
+.container {
+    max-width: 800px;
+    margin: auto;
+    background: white;
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 0 15px rgba(0,0,0,0.1);
+}
+
+/* --- En-tête --- */
+header h1 {
+    font-size: 1.5rem;
+    font-weight: 400;
+}
+
+header h2 {
+    font-size: 2.5rem;
+    color: var(--primary-color);
+    margin-top: 0;
+}
+
+.date {
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+
+/* --- Sections --- */
+.info-section {
+    margin-top: 2rem;
+    text-align: left;
+    border-top: 1px solid #e0e0e0;
+    padding-top: 1.5rem;
+}
+
+.info-section ul {
+    list-style: none;
+    padding: 0;
+}
+
+/* --- Bouton pour le jeu --- */
+.cta-button {
+    display: inline-block;
+    background-color: var(--primary-color);
+    color: var(--light-text-color);
+    padding: 12px 25px;
+    margin-top: 1rem;
+    border-radius: 5px;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 1.1rem;
+    transition: background-color 0.3s ease;
+}
+
+.cta-button:hover {
+    background-color: #385254; /* Une version un peu plus foncée au survol */
+}
+
+/* --- Pied de page --- */
+footer {
+    margin-top: 2rem;
+    font-style: italic;
+    color: #777;
+}
