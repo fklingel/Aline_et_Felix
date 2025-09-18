@@ -1,35 +1,36 @@
-/* style.css (version 3 - Design "Faire-part") */
+/* style.css (version 6 - Optimisée pour les Grands Écrans) */
 
 /* --- Configuration Globale --- */
 body, html {
     height: 100%;
     margin: 0;
     padding: 0;
-    font-family: 'Montserrat', sans-serif; /* Police par défaut */
-    
-    /* Couleur de fond inspirée de la texture papier de votre image */
+    font-family: 'Dancing Script', cursive;
     background-color: #F8F3E9; 
-    
-    /* Centrage de la carte sur la page */
     display: flex;
     justify-content: center;
     align-items: center;
+    overflow-x: hidden;
 }
 
 /* --- Le Conteneur Principal (la carte) --- */
 .card-container {
-    position: relative; /* Très important pour positionner les coins */
-    width: 1200px; /* Ajustez si besoin */
-    max-width: 95%;
-    padding: 40px;
-    box-sizing: border-box; /* Pour que le padding n'ajoute pas à la largeur */
+    width: 90vw;
+    /* -- NOUVELLE VALEUR -- Permet au conteneur de s'étendre beaucoup plus */
+    max-width: 1800px; 
+    padding: 4vw;
+    box-sizing: border-box;
+    z-index: 2; 
 }
 
 /* --- Les 4 Coins décoratifs --- */
 .corner {
-    position: absolute; /* Permet de les placer où on veut dans le container */
-    width: 250px; /* Ajustez la taille de vos décorations */
+    position: fixed;
+    width: 20vw; 
+    /* -- NOUVELLE VALEUR -- */
+    max-width: 350px; 
     height: auto;
+    z-index: 1;
 }
 .top-left { top: 0; left: 0; }
 .top-right { top: 0; right: 0; }
@@ -45,73 +46,138 @@ body, html {
 }
 
 .main-illustration {
-    width: 350px; /* Ajustez la taille de votre illustration centrale */
-    max-width: 100%;
+    width: 32vw; 
+    /* -- NOUVELLE VALEUR -- L'illustration peut devenir bien plus grande */
+    max-width: 580px; 
     height: auto;
-    margin-bottom: 20px;
+    margin-top: -30px;
+    margin-bottom: 30px;
 }
 
 h1 {
-    font-family: 'Dancing Script', cursive; /* La police calligraphiée pour les noms */
-    font-size: 5rem; /* Taille des noms */
-    color: #5a4e49; /* Couleur de texte foncée de l'image */
+    font-family: 'Dancing Script', cursive;
+    /* -- NOUVELLE VALEUR -- Le titre peut grossir davantage */
+    font-size: clamp(2.5rem, 8vw, 6rem); 
+    color: #5a4e49;
     margin: 0;
 }
 
 .date {
-    font-size: 1.2rem;
+    /* -- NOUVELLE VALEUR -- */
+    font-size: clamp(1rem, 2vw, 2rem); 
     color: #796c66;
-    margin: 10px 0 30px 0;
+    margin: 10px 0 35px 0;
 }
 
 /* --- La Navigation (les boutons) --- */
 .navigation {
     display: flex;
-    gap: 20px; /* Espace entre les boutons */
-    margin-bottom: 30px;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 2vw;
+    margin-bottom: 35px;
 }
 
 .nav-button {
-    /* Dimensions - À ajuster précisément à la taille de vos images de boutons */
-    width: 200px;
-    height: 60px;
-
-    /* Style du texte */
+    width: 22vw;
+    /* -- NOUVELLES VALEURS -- Boutons plus grands */
+    max-width: 300px;
+    height: 7vw;
+    max-height: 100px;
     text-decoration: none;
-    color: #5a4e49;
-    font-size: 1.1rem;
+    color: white; 
+    /* -- NOUVELLE VALEUR -- */
+    font-size: clamp(0.9rem, 2.6vw, 2.6rem);
     font-weight: 500;
-    
-    /* Positionnement du texte sur l'image de fond */
     display: flex;
     justify-content: center;
     align-items: center;
-
-    /* Configuration de l'image de fond */
     background-size: contain;
     background-repeat: no-repeat;
     background-position: center;
-
     transition: transform 0.2s ease;
 }
 
 .nav-button:hover {
-    transform: scale(1.05); /* Effet de zoom léger au survol */
+    transform: scale(1.05);
 }
 
-/* --- ASSOCIEZ ICI VOS IMAGES DE BOUTONS --- */
-/* IMPORTANT: Remplacez les noms de fichiers par les vôtres ! */
 .button-blue { background-image: url('images/blue_button.png'); }
 .button-pink { background-image: url('images/red_button.png'); }
 .button-green { background-image: url('images/green_button.png'); }
 
 /* --- Texte et Décoration du bas --- */
 .welcome-text {
-    font-size: 1.1rem;
+    /* -- NOUVELLE VALEUR -- */
+    font-size: clamp(1rem, 4vw, 2.6rem);
     color: #796c66;
     margin: 0 0 10px 0;
 }
 
 .bottom-decoration {
-    width: 50px; /* Ajustez la taille de la petite déco */
+    width: 10vw;
+    /* -- NOUVELLE VALEUR -- */
+    max-width: 300px;
+}
+
+
+/*
+================================================================
+==                  MEDIA QUERY POUR MOBILES                  ==
+==              (Cette partie reste inchangée)              ==
+================================================================
+*/
+@media (max-width: 768px) {
+
+    h1 {
+        font-family: 'Dancing Script', cursive;
+        /* -- NOUVELLE VALEUR -- Le titre peut grossir davantage */
+        font-size: clamp(3rem, 8vw, 6rem); 
+        color: #5a4e49;
+        margin: 0;
+    }
+
+    .date {
+        /* -- NOUVELLE VALEUR -- */
+        font-size: clamp(1.2rem, 2vw, 2rem); 
+        color: #796c66;
+        margin: 10px 0 35px 0;
+    }
+
+    .corner {
+        width: 25vw;
+        max-width: 120px;
+    }
+
+    .main-illustration {
+        width: 60vw;
+        max-width: 250px;
+        margin-top: 0;
+    }
+
+    .navigation {
+        flex-direction: column;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .nav-button {
+        width: 50vw;
+        max-width: 280px;
+        height: 12vw;
+        max-height: 80px;
+        font-size: clamp(0.9rem, 5vw, 2.6rem);
+    }
+    .welcome-text {
+    /* -- NOUVELLE VALEUR -- */
+    font-size: clamp(1.2rem, 4vw, 2.2rem);
+    color: #796c66;
+    margin: 0 0 10px 0;
+    }
+
+    .bottom-decoration {
+        width: 8vw;
+        /* -- NOUVELLE VALEUR -- */
+        max-width: 200px;
+    }
 }
