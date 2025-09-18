@@ -1,103 +1,117 @@
-/* style.css (version 2 - avec image de fond) */
+/* style.css (version 3 - Design "Faire-part") */
 
-/* --- Nouvelle palette de couleurs inspirée de l'illustration --- */
-:root {
-    --primary-color: #a1887f; /* Un brun/taupe doux, inspiré des ombres et cheveux */
-    --background-color: #f5f5f5; /* Un gris très clair */
-    --text-color: #424242;     /* Un gris foncé plus doux que le noir pur */
-    --light-text-color: #ffffff; /* Texte blanc */
-}
-
-/* --- Styles généraux --- */
-body {
-    font-family: 'Montserrat', sans-serif;
-    color: var(--text-color);
-    line-height: 1.6;
+/* --- Configuration Globale --- */
+body, html {
+    height: 100%;
     margin: 0;
+    padding: 0;
+    font-family: 'Montserrat', sans-serif; /* Police par défaut */
     
-    /* --- C'EST LA PARTIE MAGIQUE POUR L'IMAGE DE FOND --- */
-    background-image: url('images/fond.png'); /* Chemin vers votre image */
-    background-size: cover; /* L'image couvre tout l'écran, sans déformation */
-    background-position: center center; /* L'image reste centrée */
-    background-attachment: fixed; /* Effet parallax : l'image reste fixe au défilement */
-    background-repeat: no-repeat; /* Évite que l'image se répète si l'écran est grand */
+    /* Couleur de fond inspirée de la texture papier de votre image */
+    background-color: #F8F3E9; 
+    
+    /* Centrage de la carte sur la page */
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
-.container {
-    max-width: 700px; /* Un peu moins large pour mieux voir le fond */
-    margin: 40px auto; /* Ajoute de l'espace en haut et en bas */
-    
-    /* --- On rend le conteneur semi-transparent pour un effet subtil --- */
-    background: rgba(255, 255, 255, 0.9); /* Fond blanc à 90% d'opacité */
-    
-    padding: 2rem 3rem; /* Un peu plus d'espace intérieur */
-    border-radius: 15px; /* Des bords plus arrondis */
-    box-shadow: 0 5px 25px rgba(0,0,0,0.15); /* Une ombre plus prononcée */
+/* --- Le Conteneur Principal (la carte) --- */
+.card-container {
+    position: relative; /* Très important pour positionner les coins */
+    width: 1200px; /* Ajustez si besoin */
+    max-width: 95%;
+    padding: 40px;
+    box-sizing: border-box; /* Pour que le padding n'ajoute pas à la largeur */
 }
 
-/* --- En-tête --- */
-header h1 {
-    font-size: 1.5rem;
-    font-weight: 400;
+/* --- Les 4 Coins décoratifs --- */
+.corner {
+    position: absolute; /* Permet de les placer où on veut dans le container */
+    width: 250px; /* Ajustez la taille de vos décorations */
+    height: auto;
+}
+.top-left { top: 0; left: 0; }
+.top-right { top: 0; right: 0; }
+.bottom-left { bottom: 0; left: 0; }
+.bottom-right { bottom: 0; right: 0; }
+
+/* --- Le Contenu Central --- */
+.content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
 }
 
-header h2 {
-    font-size: 2.5rem;
-    color: var(--primary-color); /* Utilisation de la nouvelle couleur principale */
-    margin-top: 0;
+.main-illustration {
+    width: 350px; /* Ajustez la taille de votre illustration centrale */
+    max-width: 100%;
+    height: auto;
+    margin-bottom: 20px;
+}
+
+h1 {
+    font-family: 'Dancing Script', cursive; /* La police calligraphiée pour les noms */
+    font-size: 5rem; /* Taille des noms */
+    color: #5a4e49; /* Couleur de texte foncée de l'image */
+    margin: 0;
 }
 
 .date {
     font-size: 1.2rem;
-    font-weight: bold;
+    color: #796c66;
+    margin: 10px 0 30px 0;
 }
 
-/* --- Sections --- */
-.info-section {
-    margin-top: 2rem;
-    text-align: left;
-    border-top: 1px solid #e0e0e0;
-    padding-top: 1.5rem;
+/* --- La Navigation (les boutons) --- */
+.navigation {
+    display: flex;
+    gap: 20px; /* Espace entre les boutons */
+    margin-bottom: 30px;
 }
 
-.info-section ul {
-    list-style: none;
-    padding: 0;
-}
+.nav-button {
+    /* Dimensions - À ajuster précisément à la taille de vos images de boutons */
+    width: 200px;
+    height: 60px;
 
-.info-section strong {
-    color: var(--primary-color); /* On rappelle la couleur principale sur les éléments importants */
-}
-
-/* --- Bouton pour le jeu --- */
-.game-section {
-    text-align: center; /* On s'assure que le bouton est bien centré */
-}
-
-.cta-button {
-    display: inline-block;
-    background-color: var(--primary-color); /* Utilisation de la nouvelle couleur principale */
-    color: var(--light-text-color);
-    padding: 12px 25px;
-    margin-top: 1rem;
-    border-radius: 5px;
+    /* Style du texte */
     text-decoration: none;
-    font-weight: bold;
+    color: #5a4e49;
     font-size: 1.1rem;
-    transition: all 0.3s ease; /* Transition plus douce */
-    border: 2px solid transparent;
+    font-weight: 500;
+    
+    /* Positionnement du texte sur l'image de fond */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    /* Configuration de l'image de fond */
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+
+    transition: transform 0.2s ease;
 }
 
-.cta-button:hover {
-    background-color: transparent; /* Fond transparent au survol */
-    color: var(--primary-color); /* Texte de la couleur principale */
-    border: 2px solid var(--primary-color); /* Bordure qui apparaît */
+.nav-button:hover {
+    transform: scale(1.05); /* Effet de zoom léger au survol */
 }
 
-/* --- Pied de page --- */
-footer {
-    margin-top: 2rem;
-    font-style: italic;
-    color: #777;
-    text-align: center;
+/* --- ASSOCIEZ ICI VOS IMAGES DE BOUTONS --- */
+/* IMPORTANT: Remplacez les noms de fichiers par les vôtres ! */
+.button-blue { background-image: url('images/blue_button.png'); }
+.button-pink { background-image: url('images/red_button.png'); }
+.button-green { background-image: url('images/green_button.png'); }
+
+/* --- Texte et Décoration du bas --- */
+.welcome-text {
+    font-size: 1.1rem;
+    color: #796c66;
+    margin: 0 0 10px 0;
+}
+
+.bottom-decoration {
+    width: 50px; /* Ajustez la taille de la petite déco */
 }
