@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Épreuve de Musique</title>
+    <link rel="stylesheet" href="style-jeu.css">
+    <link rel="stylesheet" href="style-quiz.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Nunito:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <img src="images/top_left.png" alt="" class="corner top-left"><img src="images/top_right.png" alt="" class="corner top-right"><img src="images/bottom_left.png" alt="" class="corner bottom-left"><img src="images/bottom_right.png" alt="" class="corner bottom-right">
+    <div class="game-container quiz-container">
+        <nav class="page-nav">
+            <a href="index.html" class="nav-link">← Retour à l'accueil</a>
+            <a href="jeu.html" class="nav-link">Retour aux épreuves ↑</a>
+        </nav>
+        <div id="quiz-active">
+            <header>
+                <h1>Épreuve de Musique</h1>
+                <p id="question-counter">Question 1 / 20</p>
+            </header>
+            <main>
+                <p class="instruction">Écoutez l'extrait et tapez le nom de la chanson :</p>
+                <div class="video-wrapper">
+                    <video id="whistling-animation" class="whistling-video" loop muted playsinline src="videos/sifflement.mp4"></video>
+                </div>
+                <audio id="audio-player" controls></audio>
+                <div class="answer-section">
+                    <input type="text" id="answer-input" placeholder="Votre réponse..."><button id="submit-button">Valider</button>
+                </div>
+                <p id="feedback-text"></p>
+            </main>
+        </div>
+        <div id="quiz-end-screen" class="hidden">
+            <h1>Épreuve terminée !</h1>
+            <p class="final-score">Votre score : <span id="final-score-display"></span> / 20</p>
+            <p>Votre note a été enregistrée. Vous pouvez maintenant retourner au tableau de bord.</p>
+            <a href="jeu.html" class="back-button">Retour aux épreuves</a>
+        </div>
+    </div>
+    <script src="musique.js" defer></script>
+</body>
+</html>

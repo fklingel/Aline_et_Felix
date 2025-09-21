@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Le Bac de notre Amour - Épreuves</title>
+    
+    <link rel="stylesheet" href="style-jeu.css">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Nunito:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <img src="images/top_left.png" alt="" class="corner top-left">
+    <img src="images/top_right.png" alt="" class="corner top-right">
+    <img src="images/bottom_left.png" alt="" class="corner bottom-left">
+    <img src="images/bottom_right.png" alt="" class="corner bottom-right">
+
+    <div class="game-container">
+        <nav class="page-nav">
+            <a href="index.html" class="nav-link">← Retour à l'accueil</a>
+        </nav>
+        <header>
+            <h1>Le Bac de notre Amour</h1>
+            <p>Cliquez sur une matière pour commencer l'épreuve. Votre progression sera sauvegardée !</p>
+        </header>
+
+        <main class="subjects-grid">
+
+            <!-- Histoire -->
+            <div class="subject-wrapper">
+                <img src="images/icone_histoire.png" alt="" class="subject-icon">
+                <a href="#" class="subject-button button-pink">Histoire</a>
+                <p class="score" data-subject="histoire">- / 20</p>
+            </div>
+
+            <!-- Géographie -->
+            <div class="subject-wrapper">
+                <img src="images/icone_geo.png" alt="" class="subject-icon">
+                <a href="#" class="subject-button button-blue">Géographie</a>
+                <p class="score" data-subject="geographie">- / 20</p>
+            </div>
+
+            <!-- Maths -->
+            <div class="subject-wrapper">
+                <img src="images/icone_maths.png" alt="" class="subject-icon">
+                <a href="#" class="subject-button button-orange">Maths</a>
+                <p class="score" data-subject="maths">- / 20</p>
+            </div>
+
+            <!-- Biologie -->
+            <div class="subject-wrapper">
+                <img src="images/icone_bio.png" alt="" class="subject-icon">
+                <a href="biologie.html" class="subject-button button-green">Biologie</a>
+                <p class="score" data-subject="biologie">- / 20</p>
+            </div>
+
+            <!-- Musique -->
+            <div class="subject-wrapper">
+                <img src="images/icone_musique.png" alt="" class="subject-icon">
+                <a href="musique.html" class="subject-button button-violet">Musique</a>
+                <p class="score" data-subject="musique">- / 20</p>
+            </div>
+
+            <!-- Sport -->
+            <div class="subject-wrapper">
+                <img src="images/icone_sport.png" alt="" class="subject-icon">
+                <a href="#" class="subject-button button-yellow">Sport</a>
+                <p class="score" data-subject="sport">- / 20</p>
+            </div>
+
+        </main>
+
+        <footer>
+            <h3>Votre Bilan</h3>
+            <div class="summary">
+                <p>Épreuves complétées : <span id="completed-count">0 / 6</span></p>
+                <p>Moyenne générale : <span id="average-score">-- / 20</span></p>
+            </div>
+            <p id="final-remark" class="hidden">Terminez toutes les épreuves pour voir votre mention !</p>
+        </footer>
+    </div>
+
+    <script src="jeu.js" defer></script>
+</body>
+</html>
