@@ -1,0 +1,870 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Aqua Rythme : Édition Mobile</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #006064;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+            color: white;
+            user-select: none;
+            touch-action: none;
+        }
+
+        #gameContainer {
+            position: relative;
+            box-shadow: 0 0 50px rgba(0, 255, 255, 0.2);
+            border-radius: 12px;
+            overflow: hidden;
+            border: 4px solid #fff;
+            width: 800px;
+            height: 600px;
+            max-width: 100%;
+            max-height: 100%;
+        }
+
+        canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, #00BCD4 0%, #0097A7 60%, #006064 100%);
+        }
+
+        /* Interface Utilisateur */
+        #hud,
+        #start-screen,
+        #end-screen {
+            position: absolute;
+            pointer-events: none;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+        }
+
+        #hud {
+            display: flex;
+            justify-content: space-between;
+            padding: 20px;
+            box-sizing: border-box;
+            font-size: 24px;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            z-index: 10;
+        }
+
+        .combo-box {
+            color: #FFEB3B;
+            font-size: 30px;
+            text-align: center;
+            position: absolute;
+            width: 100%;
+            top: 100px;
+            opacity: 0;
+            transition: opacity 0.2s;
+            z-index: 5;
+            pointer-events: none;
+        }
+
+        .combo-active {
+            opacity: 1;
+        }
+
+        #start-screen,
+        #end-screen {
+            background: rgba(0, 0, 0, 0.85);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            pointer-events: auto;
+            text-align: center;
+            backdrop-filter: blur(5px);
+            z-index: 20;
+        }
+
+        h1 {
+            font-size: 48px;
+            margin: 0 0 10px 0;
+            color: #E0F7FA;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+        }
+
+        p {
+            font-size: 18px;
+            color: #B2EBF2;
+            max-width: 500px;
+            line-height: 1.5;
+            margin: 5px 0;
+        }
+
+        button {
+            background: linear-gradient(45deg, #FF4081, #F50057);
+            border: none;
+            padding: 15px 40px;
+            color: white;
+            font-size: 20px;
+            font-weight: bold;
+            border-radius: 50px;
+            margin-top: 20px;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(245, 0, 87, 0.4);
+            transition: transform 0.2s;
+        }
+
+        button:hover {
+            transform: scale(1.05);
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .key-row {
+            display: flex;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .key {
+            width: 40px;
+            height: 40px;
+            border: 2px solid white;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        .mobile-hint {
+            margin-top: 10px;
+            font-size: 14px;
+            color: #81D4FA;
+            font-style: italic;
+        }
+
+        /* Leaderboard Style */
+        #leaderboard {
+            margin-top: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            width: 250px;
+        }
+
+        #leaderboard h3 {
+            margin: 0 0 10px 0;
+            color: #FFEB3B;
+            font-size: 20px;
+        }
+
+        #highscoresList {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            font-size: 18px;
+            color: #fff;
+            text-align: left;
+            width: 100%;
+        }
+
+        #highscoresList li {
+            display: flex;
+            justify-content: space-between;
+            border-bottom: 1px dashed rgba(255, 255, 255, 0.3);
+            padding: 5px 0;
+        }
+
+        #highscoresList li:last-child {
+            border-bottom: none;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="gameContainer">
+        <canvas id="gameCanvas" width="800" height="600"></canvas>
+
+        <div id="hud" class="hidden">
+            <div>SCORE: <span id="scoreVal">0</span></div>
+            <div>TEMPS: <span id="timeVal">40</span>s</div>
+        </div>
+        <div id="comboDisplay" class="combo-box">COMBO x<span id="comboVal">0</span></div>
+
+        <div id="start-screen">
+            <h1>Aqua Rythme</h1>
+            <p>Vous êtes la Star (Nageuse au centre).</p>
+            <div class="key-row">
+                <div class="key">←</div>
+                <div class="key">↑</div>
+                <div class="key">↓</div>
+                <div class="key">→</div>
+            </div>
+            <p class="mobile-hint">Touchez les flèches sur l'écran ou utilisez le clavier.</p>
+            <button onclick="startGame()">Commencer le Ballet</button>
+        </div>
+
+        <div id="end-screen" class="hidden">
+            <h1>Routine Terminée</h1>
+            <p>Score Final : <strong id="finalScore" style="color:#FF4081; font-size:24px;">0</strong></p>
+            <p id="rankText" style="color:#FFEB3B; font-weight:bold; font-size: 24px;">Bien !</p>
+
+            <div id="leaderboard">
+                <h3>Meilleurs Scores</h3>
+                <ul id="highscoresList">
+                    <!-- Scores injectés via JS -->
+                </ul>
+            </div>
+
+            <button onclick="startGame()">Rejouer</button>
+        </div>
+    </div>
+
+    <script>
+        // ==========================================
+        // CONFIGURATION MUSIQUE
+        // ==========================================
+        // Remplacez 'votre_musique.mp3' par le chemin de votre fichier
+        const CHEMIN_MUSIQUE = '../audio/Caravan Palace - Wonderland.mp3';
+
+        // Ajustez les BPM (Battements Par Minute) pour synchroniser la vitesse des flèches
+        // Essayez entre 90 et 130 selon la chanson.
+        const BPM = 100;
+        // ==========================================
+
+        const musicPlayer = new Audio(CHEMIN_MUSIQUE);
+        musicPlayer.loop = true;
+
+        // --- Moteur de Jeu ---
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const highscoresList = document.getElementById('highscoresList');
+
+        // Constantes
+        const ARROW_SPEED = (BPM / 60) * 180; // Vitesse calculée selon les BPM
+        const TARGET_Y = 500;
+        const SPAWN_Y = -50;
+        const PERFECT_THRESHOLD = 30;
+        const GOOD_THRESHOLD = 70;
+        const LANE_WIDTH = 80;
+        const CENTER_X = 400;
+        const START_X = CENTER_X - (LANE_WIDTH * 2);
+
+        // État du jeu
+        let notes = [];
+        let particles = [];
+        let score = 0;
+        let combo = 0;
+        let timeLeft = 40;
+        let lastTime = 0;
+        let spawnTimer = 0;
+
+        // Feedback Visuel
+        let feedback = {
+            text: "",
+            color: "#fff",
+            scale: 1,
+            opacity: 0,
+            y: TARGET_Y
+        };
+
+        // Nageuses
+        let swimmers = [];
+
+        const Game = {
+            isPlaying: false,
+
+            spawnNote() {
+                const directions = ['LEFT', 'UP', 'DOWN', 'RIGHT'];
+                const dir = directions[Math.floor(Math.random() * directions.length)];
+                notes.push({
+                    dir: dir,
+                    y: SPAWN_Y,
+                    active: true,
+                    aiTriggered: false,
+                    color: this.getColor(dir)
+                });
+            },
+
+            getColor(dir) {
+                switch (dir) {
+                    case 'LEFT': return '#E91E63';
+                    case 'UP': return '#4CAF50';
+                    case 'DOWN': return '#2196F3';
+                    case 'RIGHT': return '#FFC107';
+                }
+            },
+
+            handleInput(dir) {
+                if (!this.isPlaying) return;
+
+                // Animation immédiate de la joueuse
+                triggerSwimmerMove(swimmers[0], dir);
+
+                // Logique de validation
+                const candidates = notes.filter(n => n.active && n.dir === dir);
+
+                if (candidates.length > 0) {
+                    // Trier par proximité
+                    candidates.sort((a, b) => Math.abs(a.y - TARGET_Y) - Math.abs(b.y - TARGET_Y));
+                    const targetNote = candidates[0];
+                    const dist = Math.abs(targetNote.y - TARGET_Y);
+
+                    if (dist < GOOD_THRESHOLD) {
+                        // TOUCHÉ
+                        targetNote.active = false;
+
+                        let points = 50;
+                        let text = "BIEN";
+                        let color = "#FFEB3B"; // Jaune
+
+                        if (dist < PERFECT_THRESHOLD) {
+                            points = 100;
+                            text = "PARFAIT";
+                            color = "#00E676"; // Vert
+                            createExplosion(centerXForDir(dir), TARGET_Y, targetNote.color);
+                        }
+
+                        score += points + (combo * 5);
+                        combo++;
+
+                        triggerFeedback(text, color);
+                        createSplashEffect(swimmers[0]);
+
+                    } else {
+                        // Trop tôt / Trop tard
+                        combo = 0;
+                        triggerFeedback("RATÉ", "#FF5252");
+                    }
+                } else {
+                    // Pas de note
+                    combo = 0;
+                    triggerFeedback("RATÉ", "#FF5252");
+                }
+                updateHUD();
+            }
+        };
+
+        function centerXForDir(dir) {
+            let idx = 0;
+            if (dir === 'UP') idx = 1;
+            if (dir === 'DOWN') idx = 2;
+            if (dir === 'RIGHT') idx = 3;
+            return START_X + (idx * LANE_WIDTH) + LANE_WIDTH / 2;
+        }
+
+        function initSwimmers() {
+            swimmers = [
+                { id: 0, x: 400, y: 300, scale: 1.0, isPlayer: true, state: 'IDLE', timer: 0 },   // Joueuse
+                { id: 1, x: 280, y: 320, scale: 0.85, isPlayer: false, state: 'IDLE', timer: 0 }, // AI Gauche
+                { id: 2, x: 520, y: 320, scale: 0.85, isPlayer: false, state: 'IDLE', timer: 0 }, // AI Droite
+                { id: 3, x: 350, y: 220, scale: 0.7, isPlayer: false, state: 'IDLE', timer: 0 },  // AI Arrière G
+                { id: 4, x: 450, y: 220, scale: 0.7, isPlayer: false, state: 'IDLE', timer: 0 }   // AI Arrière D
+            ];
+        }
+
+        function triggerSwimmerMove(swimmer, type) {
+            swimmer.state = type;
+            swimmer.timer = 0.6;
+        }
+
+        function triggerFeedback(text, color) {
+            feedback.text = text;
+            feedback.color = color;
+            feedback.opacity = 1.0;
+            feedback.scale = 0.5;
+            feedback.y = TARGET_Y - 50;
+        }
+
+        function createSplashEffect(swimmer) {
+            for (let i = 0; i < 6; i++) {
+                particles.push({
+                    x: swimmer.x + (Math.random() * 40 - 20),
+                    y: swimmer.y + (Math.random() * 20 - 10),
+                    vx: (Math.random() - 0.5) * 100,
+                    vy: (Math.random() - 1) * 100 - 50,
+                    life: 1.0,
+                    color: `rgba(224, 247, 250, ${Math.random()})`,
+                    size: Math.random() * 5 + 2
+                });
+            }
+        }
+
+        function createExplosion(x, y, color) {
+            for (let i = 0; i < 8; i++) {
+                particles.push({
+                    x: x,
+                    y: y,
+                    vx: (Math.random() - 0.5) * 250,
+                    vy: (Math.random() - 0.5) * 250,
+                    life: 0.5,
+                    color: color,
+                    size: Math.random() * 8 + 4
+                });
+            }
+        }
+
+        // --- Gestion du Leaderboard ---
+        function saveScore(newScore) {
+            let scores = JSON.parse(localStorage.getItem('aquaRythmeScores')) || [];
+            scores.push(newScore);
+            scores.sort((a, b) => b - a); // Décroissant
+            scores = scores.slice(0, 5); // Top 5
+            localStorage.setItem('aquaRythmeScores', JSON.stringify(scores));
+            updateLeaderboardDisplay(scores);
+        }
+
+        function updateLeaderboardDisplay(scores) {
+            if (!scores) scores = JSON.parse(localStorage.getItem('aquaRythmeScores')) || [];
+            highscoresList.innerHTML = scores.map((s, i) =>
+                `<li><span>#${i + 1}</span> <span>${s} pts</span></li>`
+            ).join('');
+
+            if (scores.length === 0) {
+                highscoresList.innerHTML = "<li style='justify-content:center'>Aucun score</li>";
+            }
+        }
+
+        // --- Boucle de Jeu ---
+
+        function update(dt) {
+            timeLeft -= dt;
+            if (timeLeft <= 0) endGame();
+
+            // Timer de génération de flèches (basé sur le BPM)
+            spawnTimer += dt;
+            const beatInterval = 60 / BPM;
+            if (spawnTimer >= beatInterval) {
+                spawnTimer -= beatInterval;
+                // 70% de chance d'apparition sur un temps fort
+                if (Math.random() > 0.3) Game.spawnNote();
+            }
+
+            // 1. Swimmer Logic
+            swimmers.forEach(s => {
+                if (s.timer > 0) {
+                    s.timer -= dt;
+                    if (s.timer <= 0) s.state = 'IDLE';
+                }
+            });
+
+            // 2. Feedback Animation
+            if (feedback.opacity > 0) {
+                feedback.opacity -= dt * 1.5;
+                feedback.y -= dt * 30;
+                feedback.scale = Math.min(1.2, feedback.scale + dt * 2);
+                if (feedback.opacity < 0) feedback.opacity = 0;
+            }
+
+            // 3. Notes Logic
+            for (let i = notes.length - 1; i >= 0; i--) {
+                let n = notes[i];
+                n.y += ARROW_SPEED * dt;
+
+                // AI Trigger Logic (Synchro parfaite)
+                if (!n.aiTriggered && n.y > TARGET_Y - 10) {
+                    n.aiTriggered = true;
+                    swimmers.forEach(s => {
+                        if (!s.isPlayer) triggerSwimmerMove(s, n.dir);
+                    });
+                    if (Math.random() > 0.5) createSplashEffect(swimmers[1]);
+                }
+
+                // Miss logic
+                if (n.active && n.y > TARGET_Y + GOOD_THRESHOLD + 20) {
+                    n.active = false;
+                    combo = 0;
+                    triggerFeedback("RATÉ", "#FF5252");
+                    updateHUD();
+                }
+
+                if (n.y > canvas.height) notes.splice(i, 1);
+            }
+
+            // 4. Particules
+            for (let i = particles.length - 1; i >= 0; i--) {
+                let p = particles[i];
+                p.x += p.vx * dt;
+                p.y += p.vy * dt;
+                p.life -= dt * 2;
+                if (p.life <= 0) particles.splice(i, 1);
+            }
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Eau
+            let time = performance.now() / 1000;
+            ctx.globalAlpha = 0.3;
+            for (let i = 0; i < 3; i++) {
+                ctx.strokeStyle = "rgba(255,255,255,0.2)";
+                ctx.lineWidth = 3;
+                ctx.beginPath();
+                let r = (time * 40 + i * 120) % 400;
+                ctx.arc(400, 300, r, 0, Math.PI * 2);
+                ctx.stroke();
+            }
+            ctx.globalAlpha = 1.0;
+
+            // Nageuses (ordre de profondeur)
+            // 3 (Arr G), 4 (Arr D), 1 (G), 2 (D), 0 (Joueur)
+            drawSwimmer(swimmers[3]);
+            drawSwimmer(swimmers[4]);
+            drawSwimmer(swimmers[1]);
+            drawSwimmer(swimmers[2]);
+            drawSwimmer(swimmers[0]);
+
+            // Particules
+            particles.forEach(p => {
+                ctx.fillStyle = p.color;
+                ctx.globalAlpha = p.life;
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                ctx.fill();
+            });
+            ctx.globalAlpha = 1.0;
+
+            // UI
+            drawRhythmInterface();
+            drawFeedbackText();
+        }
+
+        function drawSwimmer(s) {
+            ctx.save();
+            ctx.translate(s.x, s.y);
+            ctx.scale(s.scale, s.scale);
+
+            // Ombre
+            ctx.fillStyle = "rgba(0,0,0,0.2)";
+            ctx.beginPath();
+            ctx.ellipse(0, 10, 30, 15, 0, 0, Math.PI * 2);
+            ctx.fill();
+
+            const skin = "#FFCCBC";
+            const suit = s.isPlayer ? "#E91E63" : "#00BCD4"; // Rose (Joueur), Bleu (IA)
+            const cap = s.isPlayer ? "#F8BBD0" : "#B2EBF2";
+
+            if (s.state === 'IDLE') {
+                let bob = Math.sin((performance.now() + s.x) / 300) * 3;
+
+                ctx.fillStyle = suit;
+                ctx.fillRect(-15, 0 + bob, 30, 20);
+
+                ctx.fillStyle = skin;
+                ctx.beginPath();
+                ctx.arc(0, -25 + bob, 15, 0, Math.PI * 2);
+                ctx.fill();
+
+                ctx.fillStyle = cap;
+                ctx.beginPath();
+                ctx.arc(0, -30 + bob, 14, Math.PI, 0);
+                ctx.fill();
+
+                ctx.strokeStyle = skin;
+                ctx.lineWidth = 8;
+                ctx.lineCap = "round";
+                ctx.beginPath();
+                ctx.moveTo(-20, 5 + bob);
+                ctx.lineTo(-40, 10 + bob);
+                ctx.moveTo(20, 5 + bob);
+                ctx.lineTo(40, 10 + bob);
+                ctx.stroke();
+
+            } else if (s.state === 'UP') {
+                // Jambe levée
+                ctx.fillStyle = suit;
+                ctx.fillRect(-15, 0, 30, 20);
+                ctx.fillStyle = skin;
+                ctx.beginPath();
+                ctx.arc(0, -25, 15, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.fillStyle = cap;
+                ctx.beginPath();
+                ctx.arc(0, -30, 14, Math.PI, 0);
+                ctx.fill();
+
+                ctx.strokeStyle = skin;
+                ctx.lineWidth = 10;
+                ctx.beginPath();
+                ctx.moveTo(10, 10);
+                ctx.lineTo(10, -60);
+                ctx.lineTo(15, -70);
+                ctx.stroke();
+
+                ctx.beginPath();
+                ctx.moveTo(-10, 10);
+                ctx.lineTo(-15, 30);
+                ctx.stroke();
+
+            } else if (s.state === 'DOWN') {
+                // Plongée
+                let bob = Math.sin(performance.now() / 100) * 2;
+                ctx.strokeStyle = skin;
+                ctx.lineWidth = 10;
+
+                ctx.beginPath();
+                ctx.moveTo(-5, 0 + bob);
+                ctx.lineTo(-5, -50 + bob);
+                ctx.moveTo(5, 0 + bob);
+                ctx.lineTo(5, -50 + bob);
+                ctx.stroke();
+
+                ctx.fillStyle = skin;
+                ctx.beginPath();
+                ctx.ellipse(0, -55 + bob, 10, 5, -Math.PI / 2, 0, Math.PI * 2);
+                ctx.fill();
+
+            } else if (s.state === 'LEFT') {
+                // Tourne
+                let rot = (performance.now() / 2) % 360;
+                ctx.save();
+                ctx.rotate(rot * Math.PI / 180);
+                ctx.fillStyle = suit;
+                ctx.beginPath();
+                ctx.ellipse(0, 0, 15, 25, 0, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.strokeStyle = skin;
+                ctx.lineWidth = 6;
+                ctx.beginPath();
+                ctx.moveTo(0, -10);
+                ctx.lineTo(30, -20);
+                ctx.moveTo(0, -10);
+                ctx.lineTo(-30, 20);
+                ctx.stroke();
+                ctx.fillStyle = cap;
+                ctx.beginPath();
+                ctx.arc(0, 0, 12, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.restore();
+
+            } else if (s.state === 'RIGHT') {
+                // Vague
+                ctx.fillStyle = suit;
+                ctx.fillRect(-15, 0, 30, 20);
+                ctx.fillStyle = skin;
+                ctx.beginPath();
+                ctx.arc(0, -25, 15, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.fillStyle = cap;
+                ctx.beginPath();
+                ctx.arc(0, -30, 14, Math.PI, 0);
+                ctx.fill();
+
+                let wave = Math.sin(performance.now() / 100) * 0.5;
+                ctx.strokeStyle = skin;
+                ctx.lineWidth = 8;
+                ctx.save();
+                ctx.translate(20, 0);
+                ctx.rotate(wave - 0.5);
+                ctx.beginPath();
+                ctx.moveTo(0, 0);
+                ctx.lineTo(0, -50);
+                ctx.stroke();
+                ctx.fillStyle = skin;
+                ctx.beginPath();
+                ctx.arc(0, -55, 5, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.restore();
+
+                ctx.beginPath();
+                ctx.moveTo(-20, 0);
+                ctx.lineTo(-30, 20);
+                ctx.stroke();
+            }
+
+            ctx.restore();
+        }
+
+        function drawRhythmInterface() {
+            const targets = ['←', '↑', '↓', '→'];
+
+            for (let i = 0; i < 4; i++) {
+                let x = START_X + (i * LANE_WIDTH) + LANE_WIDTH / 2;
+
+                // Zone cible
+                ctx.strokeStyle = "rgba(255,255,255,0.6)";
+                ctx.lineWidth = 4;
+                ctx.beginPath();
+                ctx.arc(x, TARGET_Y, 28, 0, Math.PI * 2);
+                ctx.stroke();
+
+                // Fond tactile
+                ctx.fillStyle = "rgba(0,0,0,0.2)";
+                ctx.beginPath();
+                ctx.arc(x, TARGET_Y, 26, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Icône
+                ctx.fillStyle = "rgba(255,255,255,0.8)";
+                ctx.font = "30px Arial";
+                ctx.textAlign = "center";
+                ctx.textBaseline = "middle";
+                ctx.fillText(targets[i], x, TARGET_Y);
+            }
+
+            // Notes actives
+            notes.forEach(n => {
+                if (!n.active) return;
+
+                let colIndex = 0;
+                let symbol = '';
+                if (n.dir === 'LEFT') { colIndex = 0; symbol = '←'; }
+                if (n.dir === 'UP') { colIndex = 1; symbol = '↑'; }
+                if (n.dir === 'DOWN') { colIndex = 2; symbol = '↓'; }
+                if (n.dir === 'RIGHT') { colIndex = 3; symbol = '→'; }
+
+                let x = START_X + (colIndex * LANE_WIDTH) + LANE_WIDTH / 2;
+
+                ctx.fillStyle = n.color;
+                ctx.beginPath();
+                ctx.arc(x, n.y, 23, 0, Math.PI * 2);
+                ctx.fill();
+
+                ctx.fillStyle = "white";
+                ctx.font = "bold 28px Arial";
+                ctx.fillText(symbol, x, n.y + 2);
+            });
+        }
+
+        function drawFeedbackText() {
+            if (feedback.opacity <= 0) return;
+
+            ctx.save();
+            ctx.globalAlpha = feedback.opacity;
+            ctx.translate(CENTER_X, feedback.y);
+            ctx.scale(feedback.scale, feedback.scale);
+
+            ctx.font = "900 40px 'Segoe UI', Arial";
+            ctx.textAlign = "center";
+
+            // Contour
+            ctx.lineWidth = 4;
+            ctx.strokeStyle = "black";
+            ctx.strokeText(feedback.text, 0, 0);
+
+            // Remplissage
+            ctx.fillStyle = feedback.color;
+            ctx.fillText(feedback.text, 0, 0);
+
+            ctx.restore();
+        }
+
+        // --- Contrôles ---
+
+        function updateHUD() {
+            document.getElementById('scoreVal').innerText = score;
+            document.getElementById('comboVal').innerText = combo;
+            const comboEl = document.getElementById('comboDisplay');
+            if (combo > 1) comboEl.classList.add('combo-active');
+            else comboEl.classList.remove('combo-active');
+        }
+
+        function startGame() {
+            score = 0;
+            combo = 0;
+            timeLeft = 40;
+            notes = [];
+            particles = [];
+            spawnTimer = 0;
+            initSwimmers();
+            updateLeaderboardDisplay(); // Charger les scores existants
+
+            document.getElementById('start-screen').classList.add('hidden');
+            document.getElementById('end-screen').classList.add('hidden');
+            document.getElementById('hud').classList.remove('hidden');
+
+            updateHUD();
+
+            // Lancer la musique
+            musicPlayer.currentTime = 0;
+            musicPlayer.play().catch(e => console.log("Lecture audio bloquée par le navigateur, interaction requise.", e));
+
+            Game.isPlaying = true;
+            lastTime = performance.now();
+            requestAnimationFrame(gameLoop);
+        }
+
+        function endGame() {
+            Game.isPlaying = false;
+            musicPlayer.pause();
+
+            document.getElementById('hud').classList.add('hidden');
+            document.getElementById('comboDisplay').classList.remove('combo-active');
+            document.getElementById('end-screen').classList.remove('hidden');
+            document.getElementById('finalScore').innerText = score;
+
+            let rank = "Pas mal !";
+            if (score > 1000) rank = "Magnifique !";
+            if (score > 3000) rank = "Or Olympique !";
+            if (score > 4500) rank = "Légendaire !";
+            document.getElementById('rankText').innerText = rank;
+
+            saveScore(score);
+        }
+
+        function gameLoop(time) {
+            if (!Game.isPlaying) return;
+            let dt = (time - lastTime) / 1000;
+            lastTime = time;
+            update(dt);
+            draw();
+            document.getElementById('timeVal').innerText = Math.ceil(timeLeft);
+            requestAnimationFrame(gameLoop);
+        }
+
+        // Interactions
+        window.addEventListener('keydown', (e) => {
+            // Prevent page scrolling for arrow keys
+            if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Space'].includes(e.code)) {
+                e.preventDefault();
+            }
+
+            if (!Game.isPlaying) return;
+            if (e.key === 'ArrowLeft') Game.handleInput('LEFT');
+            if (e.key === 'ArrowUp') Game.handleInput('UP');
+            if (e.key === 'ArrowDown') Game.handleInput('DOWN');
+            if (e.key === 'ArrowRight') Game.handleInput('RIGHT');
+        });
+
+        canvas.addEventListener('pointerdown', (e) => {
+            if (!Game.isPlaying) return;
+            const rect = canvas.getBoundingClientRect();
+            const scaleX = canvas.width / rect.width;
+            const scaleY = canvas.height / rect.height;
+            const x = (e.clientX - rect.left) * scaleX;
+            const y = (e.clientY - rect.top) * scaleY;
+
+            if (y > TARGET_Y - 50 && y < TARGET_Y + 50) {
+                const relativeX = x - START_X;
+                if (relativeX > 0 && relativeX < LANE_WIDTH * 4) {
+                    const laneIdx = Math.floor(relativeX / LANE_WIDTH);
+                    const dirs = ['LEFT', 'UP', 'DOWN', 'RIGHT'];
+                    Game.handleInput(dirs[laneIdx]);
+                }
+            }
+        });
+
+        // Initial render
+        initSwimmers();
+        draw();
+        updateLeaderboardDisplay();
+
+    </script>
+</body>
+
+</html>

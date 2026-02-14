@@ -1,0 +1,290 @@
+/* Modification pour éviter le centrage vertical qui coupe le haut sur les longs formulaires */
+/* On doit surcharger à la fois html ET body car style.css les cible tous les deux */
+html,
+body {
+    display: block !important;
+    height: auto !important;
+    min-height: 100vh;
+    overflow-y: auto !important;
+    /* On retire le centrage vertical flex */
+    align-items: initial !important;
+    justify-content: initial !important;
+}
+
+/* On centre le conteneur principal - surcharge le style.css global */
+.card-container {
+    width: 60% !important;
+    max-width: 60% !important;
+    margin: 0 auto;
+    padding: 80px 20px 20px 20px !important;
+    box-sizing: border-box;
+}
+
+/* Sur les petits écrans (téléphones), on prend plus de largeur */
+@media (max-width: 768px) {
+    .card-container {
+        width: 90% !important;
+        max-width: 90% !important;
+    }
+}
+
+/* Surcharge de .content pour qu'il prenne toute la largeur */
+.content {
+    width: 100% !important;
+    max-width: 100% !important;
+    align-items: stretch !important;
+}
+
+/* Hérite de la police Nunito pour le formulaire pour la lisibilité */
+.rsvp-content {
+    font-family: 'Nunito', sans-serif;
+    color: #5a4e49;
+    width: 100%;
+    /* Pas de max-width : utilise toute la largeur disponible */
+    margin: 0 auto;
+    padding: 0 20px 50px 20px;
+    box-sizing: border-box;
+}
+
+.rsvp-intro {
+    font-size: 1.1rem;
+    margin-bottom: 30px;
+    text-align: center;
+}
+
+h1 {
+    font-family: 'Dancing Script', cursive;
+    margin-bottom: 25px;
+    font-size: 3rem;
+}
+
+.form-section {
+    background: rgba(255, 255, 255, 0.85);
+    /* Plus opaque pour la lisibilité */
+    padding: 30px;
+    /* Plus d'espace interne */
+    border-radius: 15px;
+    margin-bottom: 30px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+}
+
+.form-section h3 {
+    font-family: 'Dancing Script', cursive;
+    font-size: 1.8rem;
+    color: #796c66;
+    margin-top: 0;
+    margin-bottom: 15px;
+    border-bottom: 2px solid #e0e0e0;
+    padding-bottom: 5px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+.form-group label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 8px;
+    font-size: 1rem;
+}
+
+.form-group input[type="text"],
+.form-group input[type="number"],
+.form-group textarea,
+.form-group select {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-family: 'Nunito', sans-serif;
+    box-sizing: border-box;
+    /* Important pour ne pas dépasser */
+    background-color: rgba(255, 255, 255, 0.9);
+}
+
+.radio-group-wrapper {
+    margin-bottom: 25px;
+    padding-bottom: 20px;
+    border-bottom: 1px dashed #ddd;
+    text-align: left;
+}
+
+.radio-group-wrapper:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+
+.label-question {
+    font-weight: bold;
+    margin-bottom: 15px;
+    display: block;
+    font-size: 1.1rem;
+}
+
+.radio-options {
+    display: flex;
+    gap: 30px;
+    flex-wrap: wrap;
+}
+
+.radio-options label {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 1.1rem;
+    padding: 10px 15px;
+    background-color: rgba(255, 255, 255, 0.5);
+    border-radius: 8px;
+    border: 1px solid transparent;
+    transition: all 0.2s;
+}
+
+.radio-options label:hover {
+    background-color: rgba(255, 255, 255, 1);
+    border-color: #ccc;
+}
+
+/* Style pour l'ajout dynamique de personnes */
+.guest-entry {
+    background: #f9f9f9;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    position: relative;
+    border: 1px solid #eee;
+}
+
+.remove-guest-btn {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    background: none;
+    border: none;
+    color: #d32f2f;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 1.2rem;
+}
+
+.add-guest-btn {
+    background-color: #8D6E63;
+    /* Marron clair */
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    margin-top: 5px;
+}
+
+.add-guest-btn:hover {
+    background-color: #6D4C41;
+}
+
+.submit-btn {
+    /* Style identique aux boutons de l'accueil */
+    width: 40%;
+    max-width: 300px;
+    height: 80px;
+    margin: 30px auto 0 auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-decoration: none;
+    color: white;
+    font-family: 'Dancing Script', cursive;
+    font-size: clamp(1.2rem, 2.5vw, 2rem);
+    font-weight: 700;
+    background-image: url('images/green_button.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.submit-btn:hover {
+    transform: scale(1.05);
+    background-color: transparent;
+}
+
+/* Page navigation (retour) - on le laisse dans le flux normal */
+.page-nav {
+    /* On enlève le position absolute qui causait des problèmes */
+    position: static;
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+.nav-link {
+    text-decoration: none;
+    color: #5a4e49;
+    font-weight: bold;
+    font-size: 1.1rem;
+}
+
+/* Loading & Messages */
+.hidden {
+    display: none !important;
+}
+
+#loading-indicator,
+#success-message,
+#error-message {
+    text-align: center;
+    padding: 40px;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 15px;
+    margin-top: 20px;
+}
+
+.spinner {
+    border: 6px solid #f3f3f3;
+    border-top: 6px solid #5a4e49;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 20px auto;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+#success-message h2 {
+    color: #388e3c;
+    font-family: 'Dancing Script', cursive;
+    font-size: 2.5rem;
+}
+
+#error-message h2 {
+    color: #d32f2f;
+}
+
+.back-link {
+    display: inline-block;
+    margin-top: 20px;
+    text-decoration: none;
+    font-weight: bold;
+    color: #5a4e49;
+    border-bottom: 2px solid #5a4e49;
+}

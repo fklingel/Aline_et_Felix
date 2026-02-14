@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Épreuve de Sport</title>
+    <link rel="stylesheet" href="style-jeu.css">
+    <link rel="stylesheet" href="style-quiz.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Nunito:wght@400;700&display=swap"
+        rel="stylesheet">
+    <style>
+        .character-selection {
+            display: flex;
+            gap: 40px;
+            justify-content: center;
+            align-items: stretch;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+
+        .character-card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            width: 280px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .character-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .character-card.aline {
+            border-top: 5px solid #00BCD4;
+        }
+
+        .character-card.felix {
+            border-top: 5px solid #d32f2f;
+        }
+
+        .character-icon {
+            font-size: 80px;
+            margin-bottom: 15px;
+        }
+
+        .character-name {
+            font-family: 'Dancing Script', cursive;
+            font-size: 32px;
+            color: #5a4e49;
+            margin: 10px 0;
+        }
+
+        .character-description {
+            font-size: 16px;
+            color: #796c66;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+
+        .highscore-display {
+            background: #f8f3e9;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .highscore-label {
+            font-size: 14px;
+            color: #796c66;
+            margin-bottom: 5px;
+        }
+
+        .highscore-value {
+            font-size: 28px;
+            font-weight: bold;
+            color: #5a4e49;
+        }
+
+        .play-button {
+            background: linear-gradient(45deg, #FF4081, #F50057);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: transform 0.2s;
+            box-shadow: 0 4px 10px rgba(245, 0, 87, 0.3);
+        }
+
+        .play-button:hover {
+            transform: scale(1.05);
+        }
+
+        .character-card.aline .play-button {
+            background: linear-gradient(45deg, #00BCD4, #0097A7);
+            box-shadow: 0 4px 10px rgba(0, 188, 212, 0.3);
+        }
+
+        .character-card.felix .play-button {
+            background: linear-gradient(45deg, #d32f2f, #b71c1c);
+            box-shadow: 0 4px 10px rgba(211, 47, 47, 0.3);
+        }
+
+        .game-container-wrapper {
+            display: none;
+            margin-top: 20px;
+        }
+
+        .game-container-wrapper.active {
+            display: block;
+        }
+
+        .game-iframe {
+            width: 100%;
+            height: 650px;
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .back-to-selection {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .back-to-selection button {
+            background: linear-gradient(45deg, #9C27B0, #7B1FA2);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: transform 0.2s;
+            box-shadow: 0 4px 10px rgba(156, 39, 176, 0.3);
+        }
+
+        .back-to-selection button:hover {
+            transform: scale(1.05);
+        }
+
+        @media (max-width: 768px) {
+            .character-selection {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .character-card {
+                width: 90%;
+                max-width: 350px;
+            }
+
+            .game-iframe {
+                height: 500px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <img src="images/top_left.png" alt="" class="corner top-left">
+    <img src="images/top_right.png" alt="" class="corner top-right">
+    <img src="images/bottom_left.png" alt="" class="corner bottom-left">
+    <img src="images/bottom_right.png" alt="" class="corner bottom-right">
+
+    <div class="game-container quiz-container">
+        <nav class="page-nav">
+            <a href="index.html" class="nav-link">← Retour à l'accueil</a>
+            <a href="jeu.html" class="nav-link">Retour aux épreuves ↑</a>
+        </nav>
+
+        <div id="selection-screen">
+            <header>
+                <h1>Épreuve de Sport</h1>
+                <p>Choisissez votre athlète et battez votre record !</p>
+            </header>
+
+            <main>
+                <div class="character-selection">
+                    <!-- Aline - Swimmer -->
+                    <div class="character-card aline" onclick="playGame('aline')">
+                        <div>
+                            <div class="character-icon">🏊‍♀️</div>
+                            <h2 class="character-name">Aline</h2>
+                            <p class="character-description">
+                                Nageuse synchronisée multi-médaillée. Maîtrisez le rythme et enchaînez les combos !
+                            </p>
+                        </div>
+                        <div>
+                            <div class="highscore-display">
+                                <div class="highscore-label">Meilleur Score</div>
+                                <div class="highscore-value" id="aline-highscore">0</div>
+                            </div>
+                            <button class="play-button">Jouer à Danse Aquatique</button>
+                        </div>
+                    </div>
+
+                    <!-- Felix - Skier -->
+                    <div class="character-card felix" onclick="playGame('felix')">
+                        <div>
+                            <div class="character-icon">⛷️</div>
+                            <h2 class="character-name">Felix</h2>
+                            <p class="character-description">
+                                Skieur intrépide de l'extrême. Évitez les obstacles et réalisez des backflips
+                                spectaculaires !
+                            </p>
+                        </div>
+                        <div>
+                            <div class="highscore-display">
+                                <div class="highscore-label">Meilleur Score</div>
+                                <div class="highscore-value" id="felix-highscore">0</div>
+                            </div>
+                            <button class="play-button">Jouer à Descente Alpine</button>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+
+        <div id="game-container" class="game-container-wrapper">
+            <iframe id="game-iframe" class="game-iframe" src=""></iframe>
+            <div class="back-to-selection">
+                <button onclick="backToSelection()">← Retour à la Sélection</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Load high scores from localStorage
+        function loadHighScores() {
+            const alineScores = JSON.parse(localStorage.getItem('aquaRythmeScores')) || [];
+            const felixScores = JSON.parse(localStorage.getItem('alpinHighScores')) || [];
+
+            const alineHighscore = alineScores.length > 0 ? Math.max(...alineScores) : 0;
+            const felixHighscore = felixScores.length > 0 ? Math.max(...felixScores) : 0;
+
+            document.getElementById('aline-highscore').textContent = alineHighscore;
+            document.getElementById('felix-highscore').textContent = felixHighscore;
+        }
+
+        function playGame(character) {
+            const selectionScreen = document.getElementById('selection-screen');
+            const gameContainer = document.getElementById('game-container');
+            const gameIframe = document.getElementById('game-iframe');
+
+            // Hide selection, show game
+            selectionScreen.style.display = 'none';
+            gameContainer.classList.add('active');
+
+            // Load appropriate game
+            if (character === 'aline') {
+                gameIframe.src = 'jeux/jeu_aline.html';
+            } else if (character === 'felix') {
+                gameIframe.src = 'jeux/jeu_felix.html';
+            }
+        }
+
+        function backToSelection() {
+            const selectionScreen = document.getElementById('selection-screen');
+            const gameContainer = document.getElementById('game-container');
+            const gameIframe = document.getElementById('game-iframe');
+
+            // Show selection, hide game
+            selectionScreen.style.display = 'block';
+            gameContainer.classList.remove('active');
+
+            // Clear iframe and reload scores
+            gameIframe.src = '';
+            loadHighScores();
+        }
+
+        // Listen for messages from iframe games to handle back button
+        window.addEventListener('message', function (event) {
+            if (event.data === 'backToSelection') {
+                backToSelection();
+            }
+        });
+
+        // Prevent arrow key scrolling when game is active
+        window.addEventListener('keydown', function (event) {
+            const gameContainer = document.getElementById('game-container');
+            const isGameActive = gameContainer.classList.contains('active');
+
+            // Prevent default for arrow keys and space when game is active
+            if (isGameActive && ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Space'].includes(event.code)) {
+                event.preventDefault();
+            }
+        });
+
+        // Load scores on page load
+        loadHighScores();
+    </script>
+</body>
+
+</html>

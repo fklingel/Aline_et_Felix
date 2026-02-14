@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Informations - Aline & Felix</title>
+
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style-informations.css">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Nunito:wght@400;500;700&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+
+    <img src="images/top_left.png" alt="" class="corner top-left">
+    <img src="images/top_right.png" alt="" class="corner top-right">
+    <img src="images/bottom_left.png" alt="" class="corner bottom-left">
+    <img src="images/bottom_right.png" alt="" class="corner bottom-right">
+
+    <div class="card-container">
+        <nav class="page-nav">
+            <a href="index.html" class="nav-link">← Retour à l'accueil</a>
+        </nav>
+
+        <main class="content info-content">
+            <h1>Informations Pratiques</h1>
+
+            <!-- Navigation par onglets -->
+            <div class="tabs-nav">
+                <button class="tab-btn button-blue active" data-tab="programme">Programme</button>
+                <button class="tab-btn button-pink" data-tab="lieux">Lieux</button>
+                <button class="tab-btn button-green" data-tab="hebergement">Hébergement</button>
+            </div>
+
+            <!-- Section Programme -->
+            <section id="programme" class="tab-content active">
+                <h2>Programme du Week-end</h2>
+
+                <div class="day-block">
+                    <h3>🎉 Samedi 15 Août 2026</h3>
+                    <ul class="timeline">
+                        <li><span class="time">13h30</span> <strong>Mairie de Varrains</strong> — Cérémonie civile</li>
+                        <li><span class="time">15h00</span> <strong>Arrivée au Château du Coudray-Montpensier</strong>
+                        </li>
+                        <li><span class="time">16h00</span> <strong>Cérémonie laïque</strong></li>
+                        <li><span class="time">18h00</span> <strong>Vin d'honneur</strong></li>
+                        <li><span class="time">20h00</span> <strong>Dîner</strong></li>
+                        <li><span class="time">23h00</span> <strong>Soirée dansante</strong> 🎶</li>
+                    </ul>
+                </div>
+
+                <div class="day-block">
+                    <h3>☀️ Dimanche 16 Août 2026</h3>
+                    <ul class="timeline">
+                        <li><span class="time">11h00</span> <strong>Brunch</strong> au domaine</li>
+                        <li><span class="time">Après-midi</span> <strong>Jeux et activités</strong></li>
+                        <li><span class="time">Soir</span> <strong>Repas crêpes & soirée</strong> 🥞</li>
+                    </ul>
+                </div>
+
+                <div class="day-block">
+                    <h3>👋 Lundi 17 Août 2026</h3>
+                    <ul class="timeline">
+                        <li><span class="time">Avant 12h</span> <strong>Départ</strong> — À bientôt !</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Section Lieux -->
+            <section id="lieux" class="tab-content">
+                <h2>Les Lieux</h2>
+
+                <div class="location-card">
+                    <h3>🏛️ Mairie de Varrains</h3>
+                    <p class="address">2 Rue de la Mairie, 49400 Varrains</p>
+                    <p>Cérémonie civile à 13h30</p>
+                    <div class="map-container">
+                        <iframe
+                            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2707.5!2d-0.0567!3d47.2167!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x4806478a8a8a8a8a%3A0x0!2s2%20Rue%20de%20la%20Mairie%2C%2049400%20Varrains!5e0!3m2!1sfr!2sfr!4v1234567890"
+                            width="100%" height="450" style="border:0; border-radius: 10px;" allowfullscreen=""
+                            loading="lazy">
+                        </iframe>
+                    </div>
+                </div>
+
+                <div class="location-card">
+                    <h3>🏰 Château du Coudray-Montpensier</h3>
+                    <p class="address">Le Coudray-Montpensier, 37500 Seuilly</p>
+                    <p>Réception, hébergement et festivités</p>
+                    <div class="map-container">
+                        <iframe
+                            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2707.5!2d0.1567!3d47.1167!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x47fdcd5b8d8d8d8d%3A0x0!2sCh%C3%A2teau%20du%20Coudray-Montpensier!5e0!3m2!1sfr!2sfr!4v1234567890"
+                            width="100%" height="450" style="border:0; border-radius: 10px;" allowfullscreen=""
+                            loading="lazy">
+                        </iframe>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section Hébergement -->
+            <section id="hebergement" class="tab-content">
+                <h2>Hébergement</h2>
+                <p class="intro-text">Deux options s'offrent à vous pour passer le week-end sur place :</p>
+
+                <div class="accommodation-grid">
+                    <div class="accommodation-card">
+                        <div class="accommodation-image">
+                            <!-- Placeholder pour l'image du dortoir -->
+                            <img src="images/chambre_dortoir.png" alt="Dortoir"
+                                onerror="this.src='https://via.placeholder.com/400x250?text=Dortoir'">
+                        </div>
+                        <div class="accommodation-info">
+                            <h3>🛏️ Dortoir et Chambres Partagées</h3>
+                            <p class="capacity">Chambres de 5 / Dortoir de 10</p>
+                            <p class="price">💰 Prix libre</p>
+                            <p class="description">Ambiance conviviale et décontractée pour passer une nuit entre amis !
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="accommodation-card">
+                        <div class="accommodation-image">
+                            <!-- Placeholder pour l'image de la chambre château -->
+                            <img src="images/chambre_chateau.png" alt="Chambre au château"
+                                onerror="this.src='https://via.placeholder.com/400x250?text=Chambre+Ch%C3%A2teau'">
+                        </div>
+                        <div class="accommodation-info">
+                            <h3>👑 Chambres au Château</h3>
+                            <p class="capacity">Chambres doubles</p>
+                            <p class="price">💰 250€ / nuit</p>
+                            <p class="description">Pour une expérience royale dans le cadre magnifique du château !</p>
+                        </div>
+                    </div>
+                </div>
+
+                <p class="booking-note">📝 Indiquez votre choix d'hébergement dans le <a href="rsvp.html">formulaire
+                        RSVP</a>.</p>
+            </section>
+
+        </main>
+    </div>
+
+    <script>
+        // Gestion des onglets
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                // Désactiver tous les onglets
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+
+                // Activer l'onglet cliqué
+                btn.classList.add('active');
+                document.getElementById(btn.dataset.tab).classList.add('active');
+            });
+        });
+    </script>
+</body>
+
+</html>

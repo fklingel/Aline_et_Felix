@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RSVP - Aline & Felix</title>
+
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style-rsvp.css">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Nunito:wght@400;500;700&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+
+    <img src="images/top_left.png" alt="" class="corner top-left">
+    <img src="images/top_right.png" alt="" class="corner top-right">
+    <img src="images/bottom_left.png" alt="" class="corner bottom-left">
+    <img src="images/bottom_right.png" alt="" class="corner bottom-right">
+
+    <div class="card-container">
+        <nav class="page-nav">
+            <a href="index.html" class="nav-link">← Retour à l'accueil</a>
+        </nav>
+
+        <main class="content rsvp-content">
+            <h1>Répondez-nous !</h1>
+            <p class="rsvp-intro">Nous espérons de tout coeur vous avoir à nos côtés. <br>Merci de confirmer votre
+                présence via ce formulaire.</p>
+
+            <form id="rsvp-form" class="rsvp-form">
+
+                <div class="form-section">
+                    <h3>Les Invités</h3>
+                    <div id="guests-container">
+                        <!-- Les champs seront générés ici par JS, ou on en met un par défaut -->
+                        <div class="guest-entry" data-index="0">
+                            <div class="form-group">
+                                <label for="name-0">Nom et Prénom</label>
+                                <input type="text" id="name-0" name="guest_name_0" placeholder="Ex: Jean Dupont"
+                                    required>
+                            </div>
+                        </div>
+                    </div>
+                    <button type="button" id="add-guest-btn" class="add-guest-btn">+ Ajouter une personne</button>
+                    <input type="hidden" name="names" id="names-aggregated">
+                </div>
+
+                <div class="form-section">
+                    <h3>Votre Présence</h3>
+
+                    <div class="radio-group-wrapper">
+                        <p class="label-question">Présence au Mariage</p>
+                        <div class="radio-options">
+                            <label><input type="radio" name="reception" value="Oui" required> Oui</label>
+                            <label><input type="radio" name="reception" value="Non"> Non</label>
+                        </div>
+                    </div>
+
+                    <div class="radio-group-wrapper">
+                        <p class="label-question">Présence à la Mairie</p>
+                        <div class="radio-options">
+                            <label><input type="radio" name="mairie" value="Oui" required> Oui</label>
+                            <label><input type="radio" name="mairie" value="Non"> Non</label>
+                        </div>
+                    </div>
+
+                    <div class="radio-group-wrapper">
+                        <p class="label-question">Brunch du Dimanche</p>
+                        <div class="radio-options">
+                            <label><input type="radio" name="brunch" value="Oui" required> Oui</label>
+                            <label><input type="radio" name="brunch" value="Non"> Non</label>
+                        </div>
+                    </div>
+
+                    <div class="radio-group-wrapper">
+                        <p class="label-question">Lendemain soir (Dimanche soir)</p>
+                        <div class="radio-options">
+                            <label><input type="radio" name="dimanche_soir" value="Oui" required> Oui</label>
+                            <label><input type="radio" name="dimanche_soir" value="Non"> Non</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h3>Hébergement & Logistique</h3>
+
+                    <div class="form-group">
+                        <label for="hebergement">Option d'hébergement souhaitée</label>
+                        <select id="hebergement" name="hebergement" required>
+                            <option value="">-- Choisissez une option --</option>
+                            <option value="Dortoir">Dortoir</option>
+                            <option value="Chambre Chateau">Chambre double au Château</option>
+                            <option value="Autonome">Je gère mon hébergement</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="enfants">Nombre d'enfants présents</label>
+                        <input type="number" id="enfants" name="enfants" min="0" value="0">
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h3>Autres informations</h3>
+                    <div class="form-group">
+                        <label for="comments">Régimes alimentaires / Allergies / Commentaires</label>
+                        <textarea id="comments" name="comments" rows="3"
+                            placeholder="Allergies, intolérances, besoins spécifiques..."></textarea>
+                    </div>
+                </div>
+
+                <button type="submit" id="submit-btn" class="submit-btn">Envoyer</button>
+            </form>
+
+            <div id="loading-indicator" class="hidden">
+                <div class="spinner"></div>
+                <p>Envoi de votre réponse en cours...</p>
+            </div>
+
+            <div id="success-message" class="hidden">
+                <h2>Merci !</h2>
+                <p>Votre réponse a bien été enregistrée.</p>
+                <a href="index.html" class="back-link">Retour à l'accueil</a>
+            </div>
+
+            <div id="error-message" class="hidden">
+                <h2>Oups...</h2>
+                <p>Une erreur est survenue lors de l'envoi. Veuillez réessayer.</p>
+                <button id="retry-btn">Réessayer</button>
+            </div>
+
+        </main>
+    </div>
+
+    <script src="rsvp.js"></script>
+</body>
+
+</html>

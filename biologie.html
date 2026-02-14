@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,10 +9,41 @@
     <link rel="stylesheet" href="style-quiz.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Nunito:wght@400;700&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Nunito:wght@400;700&display=swap"
+        rel="stylesheet">
+    <style>
+        .animal-reveal-image {
+            max-width: 100%;
+            max-height: 300px;
+            margin-top: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            display: none;
+            /* Cache l'image par défaut */
+        }
+
+        .reveal-visible {
+            display: block;
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+    </style>
 </head>
+
 <body>
-    <img src="images/top_left.png" alt="" class="corner top-left"><img src="images/top_right.png" alt="" class="corner top-right"><img src="images/bottom_left.png" alt="" class="corner bottom-left"><img src="images/bottom_right.png" alt="" class="corner bottom-right">
+    <img src="images/top_left.png" alt="" class="corner top-left"><img src="images/top_right.png" alt=""
+        class="corner top-right"><img src="images/bottom_left.png" alt="" class="corner bottom-left"><img
+        src="images/bottom_right.png" alt="" class="corner bottom-right">
     <div class="game-container quiz-container">
         <nav class="page-nav">
             <a href="index.html" class="nav-link">← Retour à l'accueil</a>
@@ -20,35 +52,37 @@
         <div id="quiz-active">
             <header>
                 <h1>Épreuve de Biologie</h1>
-                <p id="question-counter">Question 1 / X</p>
+                <p id="question-counter">Question 1 / 10</p>
             </header>
             <main>
-                <p class="instruction">À qui appartient cet animal ? Glissez-le sur le bon propriétaire !</p>
-                <div id="animal-source" class="drop-zone">
-                    <h3 id="animal-name"></h3>
-                    <img src="" alt="Animal à placer" id="animal-image" class="animal-draggable">
+                <p class="instruction">Écoutez le cri et devinez l'animal :</p>
+
+                <div class="audio-wrapper">
+                    <!-- Animation ou icône pendant l'écoute (optionnel, on peut mettre une image générique ou rien) -->
+                    <!-- <img src="images/audio_icon.png" alt="Écoute" style="width: 100px; opacity: 0.8;"> -->
                 </div>
-                <div class="drop-zone-container">
-                    <div id="aline" class="drop-zone owner-zone"><h4>Aline</h4><div class="owner-photo-container"><img src="images/aline.png" alt="Aline" class="owner-photo"></div></div>
-                    <div id="felix" class="drop-zone owner-zone"><h4>Felix</h4><div class="owner-photo-container"><img src="images/felix.png" alt="Felix" class="owner-photo"></div></div>
-                    <div id="both" class="drop-zone owner-zone"><h4>Nous deux</h4><div class="owner-photo-container"><img src="images/aline_felix.png" alt="Aline et Felix" class="owner-photo"></div></div>
+
+                <audio id="audio-player" controls></audio>
+
+                <div class="answer-section">
+                    <input type="text" id="answer-input" placeholder="Votre réponse..." autocomplete="off"><button
+                        id="submit-button">Valider</button>
+                </div>
+
+                <div id="feedback-area">
+                    <p id="feedback-text"></p>
+                    <img id="animal-reveal" class="animal-reveal-image" src="" alt="Réponse en image">
                 </div>
             </main>
         </div>
         <div id="quiz-end-screen" class="hidden">
             <h1>Épreuve terminée !</h1>
-            <p class="final-score">Votre score : <span id="final-score-display"></span> / X</p>
-            <p>Votre note a été enregistrée.</p>
+            <p class="final-score">Votre score : <span id="final-score-display"></span> / 10</p>
+            <p>Votre note a été enregistrée. Vous pouvez maintenant retourner au tableau de bord.</p>
             <a href="jeu.html" class="back-button">Retour aux épreuves</a>
         </div>
     </div>
-    <div id="feedback-overlay" class="feedback-overlay hidden">
-        <div class="feedback-content">
-            <h2 id="feedback-title"></h2>
-            <img src="" alt="Photo réponse" id="real-photo"><p>Photo souvenir !</p>
-        </div>
-    </div>
-    <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
     <script src="biologie.js" defer></script>
 </body>
+
 </html>

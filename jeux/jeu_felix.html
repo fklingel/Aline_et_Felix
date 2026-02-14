@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alpin Extrême : Air Time</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #87CEEB;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+            user-select: none;
+        }
+
+        #gameContainer {
+            position: relative;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            overflow: hidden;
+            border: 4px solid #fff;
+        }
+
+        canvas {
+            display: block;
+            background: linear-gradient(to bottom, #1976D2 0%, #87CEEB 60%, #E0F7FA 100%);
+        }
+
+        #ui-layer {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 24px;
+            font-weight: bold;
+            color: #fff;
+            text-shadow: 2px 2px 0 #000;
+            text-align: right;
+        }
+
+        #trick-text {
+            position: absolute;
+            top: 30%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 56px;
+            font-weight: 900;
+            font-style: italic;
+            color: #FFD700;
+            text-shadow: 3px 3px 0 #D32F2F;
+            opacity: 0;
+            transition: opacity 0.2s, transform 0.2s;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        .show-trick {
+            opacity: 1 !important;
+            transform: translate(-50%, -80%) scale(1.2) !important;
+        }
+
+        #start-screen,
+        #game-over-screen {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+            min-width: 350px;
+            z-index: 20;
+        }
+
+        h1 {
+            margin: 0 0 10px 0;
+            color: #d32f2f;
+            font-style: italic;
+            font-size: 32px;
+        }
+
+        p {
+            color: #455a64;
+            font-size: 18px;
+            margin: 5px 0;
+        }
+
+        button {
+            background-color: #d32f2f;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 30px;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: transform 0.1s;
+            box-shadow: 0 4px 0 #b71c1c;
+        }
+
+        button:hover {
+            background-color: #f44336;
+            transform: translateY(-2px);
+        }
+
+        button:active {
+            transform: translateY(2px);
+            box-shadow: 0 0 0 #b71c1c;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* Styles du Leaderboard */
+        #leaderboard {
+            margin-top: 20px;
+            background: #f1f8e9;
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid #c5e1a5;
+        }
+
+        #leaderboard h3 {
+            margin: 0 0 10px 0;
+            color: #33691e;
+            font-size: 18px;
+        }
+
+        #highscoresList {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            font-size: 16px;
+            color: #558b2f;
+            text-align: left;
+            width: 100%;
+        }
+
+        #highscoresList li {
+            display: flex;
+            justify-content: space-between;
+            border-bottom: 1px dashed #c5e1a5;
+            padding: 4px 0;
+        }
+
+        #highscoresList li:last-child {
+            border-bottom: none;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="gameContainer">
+        <canvas id="gameCanvas" width="900" height="500"></canvas>
+        <div id="ui-layer">
+            Score : <span id="scoreVal">0</span><br>
+            <span style="font-size: 16px; color: #eee;">Vitesse : <span id="speedVal">1.0</span>x</span>
+        </div>
+
+        <div id="trick-text">PARFAIT ! +500</div>
+
+        <div id="start-screen">
+            <h1>Alpin Extrême</h1>
+            <p><strong>ESPACE</strong> pour Sauter</p>
+            <p><strong>BAS</strong> pour se Baisser</p>
+            <hr style="border:0; border-top:1px solid #ccc; margin: 15px 0;">
+            <p style="font-size: 15px; color: #333; line-height: 1.5;">
+                Les <span style="color:#0277BD; font-weight:bold;">Rampes Bleues</span> vous lancent auto.<br>
+                Appuyez sur <strong>ESPACE</strong> en l'air pour un Backflip !
+            </p>
+            <button onclick="startGame()">Commencer</button>
+        </div>
+
+        <div id="game-over-screen" class="hidden">
+            <h1>CHUTE !</h1>
+            <p>Secours en approche.</p>
+            <p>Score Final : <strong id="finalScore" style="color:#d32f2f; font-size: 24px;">0</strong></p>
+
+            <div id="leaderboard">
+                <h3>Meilleurs Scores</h3>
+                <ul id="highscoresList">
+                    <!-- Scores injected via JS -->
+                </ul>
+            </div>
+
+            <button onclick="resetGame()">Rejouer</button>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const scoreEl = document.getElementById('scoreVal');
+        const speedEl = document.getElementById('speedVal');
+        const finalScoreEl = document.getElementById('finalScore');
+        const startScreen = document.getElementById('start-screen');
+        const gameOverScreen = document.getElementById('game-over-screen');
+        const trickText = document.getElementById('trick-text');
+        const highscoresList = document.getElementById('highscoresList');
+
+        // --- Configuration ---
+        const PLAYER_START_X = 150;
+        const GROUND_BASE_Y = 350;
+        const SLOPE_ANGLE = 10 * (Math.PI / 180);
+        const GRAVITY = 0.5;
+        const JUMP_FORCE = -11;
+        const RAMP_FORCE = -15;
+        const START_SPEED = 6;
+        const MAX_SPEED = 14;
+
+        // --- État du Jeu ---
+        let gameSpeed = START_SPEED;
+        let score = 0;
+        let frameCount = 0;
+        let gameState = 'START';
+        let gameLoopId;
+
+        let keys = { space: false, down: false };
+
+        // --- Entités ---
+        let player = {
+            x: PLAYER_START_X,
+            y: GROUND_BASE_Y,
+            width: 40,
+            height: 60,
+            dy: 0,
+            isDucking: false,
+            isGrounded: true,
+            rotation: 0,
+            color: '#e53935',
+            // Trick State
+            isFlipping: false,
+            canTrick: false,
+            flipAngle: 0
+        };
+
+        let obstacles = [];
+        let clouds = [];
+
+        let helicopter = {
+            x: -200, y: 50, ropeLength: 0, state: 'IDLE', rotorAngle: 0
+        };
+
+        // --- Entrées (Inputs) ---
+        document.addEventListener('keydown', (e) => {
+            // Prevent page scrolling for arrow keys and space
+            if (['Space', 'ArrowUp', 'ArrowDown'].includes(e.code)) {
+                e.preventDefault();
+            }
+
+            if (gameState !== 'PLAYING') return;
+
+            if (e.code === 'Space' || e.code === 'ArrowUp') {
+                keys.space = true;
+
+                // Trigger Backflip
+                if (!player.isGrounded && player.canTrick && !player.isFlipping) {
+                    performBackflip();
+                }
+            }
+
+            if (e.code === 'ArrowDown') keys.down = true;
+        });
+
+        document.addEventListener('keyup', (e) => {
+            if (e.code === 'Space' || e.code === 'ArrowUp') keys.space = false;
+            if (e.code === 'ArrowDown') keys.down = false;
+        });
+
+        // --- Logique ---
+
+        function init() {
+            clouds = [];
+            for (let i = 0; i < 8; i++) {
+                clouds.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * 200,
+                    scale: 0.5 + Math.random() * 0.8,
+                    speed: 0.2 + Math.random() * 0.5
+                });
+            }
+            updateLeaderboardDisplay();
+        }
+
+        function startGame() {
+            startScreen.classList.add('hidden');
+            resetVariables();
+            gameState = 'PLAYING';
+            loop();
+        }
+
+        function resetVariables() {
+            player.x = PLAYER_START_X;
+            player.y = GROUND_BASE_Y;
+            player.dy = 0;
+            player.rotation = 0;
+            player.isDucking = false;
+            player.isGrounded = true;
+            player.isFlipping = false;
+            player.canTrick = false;
+            player.flipAngle = 0;
+
+            obstacles = [];
+            score = 0;
+            gameSpeed = START_SPEED;
+            frameCount = 0;
+            scoreEl.innerText = '0';
+            speedEl.innerText = '1.0';
+
+            helicopter.x = canvas.width + 200;
+            helicopter.y = -100;
+            helicopter.state = 'IDLE';
+            helicopter.ropeLength = 0;
+        }
+
+        function resetGame() {
+            gameOverScreen.classList.add('hidden');
+            cancelAnimationFrame(gameLoopId);
+            startGame();
+        }
+
+        function spawnObstacle() {
+            const rand = Math.random();
+            let type = 'TREE';
+
+            // Probabilités
+            if (rand > 0.85) type = 'RAMP';
+            else if (rand > 0.75) type = 'CREVASSE';
+            else if (rand > 0.60) type = 'KID';
+            else if (rand > 0.40) type = 'BIRD';
+
+            let obs = {
+                x: canvas.width + 100,
+                y: 0,
+                width: 0,
+                height: 0,
+                type: type,
+                hit: false,
+                speedFactor: 1.0
+            };
+
+            if (type === 'TREE') {
+                obs.width = 40; obs.height = 60;
+                obs.y = GROUND_BASE_Y - obs.height + 5;
+            } else if (type === 'BIRD') {
+                obs.width = 40; obs.height = 30;
+                obs.y = GROUND_BASE_Y - 90;
+            } else if (type === 'CREVASSE') {
+                obs.width = 110; obs.height = 20;
+                obs.y = GROUND_BASE_Y;
+            } else if (type === 'RAMP') {
+                obs.width = 100; obs.height = 35;
+                obs.y = GROUND_BASE_Y - obs.height;
+            } else if (type === 'KID') {
+                obs.width = 30; obs.height = 45;
+                obs.y = GROUND_BASE_Y - obs.height + 2;
+                obs.speedFactor = 0.65; // Enfant plus lent
+            }
+
+            obstacles.push(obs);
+        }
+
+        function performBackflip() {
+            player.isFlipping = true;
+            player.canTrick = false;
+            score += 500;
+
+            trickText.innerText = "BACKFLIP !";
+            trickText.classList.remove('show-trick');
+            void trickText.offsetWidth;
+            trickText.classList.add('show-trick');
+            setTimeout(() => trickText.classList.remove('show-trick'), 1000);
+        }
+
+        // --- Gestion du Leaderboard (Local Storage) ---
+        function saveScore(newScore) {
+            let scores = JSON.parse(localStorage.getItem('alpinHighScores')) || [];
+            scores.push(newScore);
+            scores.sort((a, b) => b - a); // Tri décroissant
+            scores = scores.slice(0, 5); // Garder le top 5
+            localStorage.setItem('alpinHighScores', JSON.stringify(scores));
+            updateLeaderboardDisplay(scores);
+        }
+
+        function updateLeaderboardDisplay(scores) {
+            if (!scores) scores = JSON.parse(localStorage.getItem('alpinHighScores')) || [];
+            highscoresList.innerHTML = scores.map((s, i) =>
+                `<li><span>#${i + 1}</span> <span>${s} pts</span></li>`
+            ).join('');
+
+            if (scores.length === 0) {
+                highscoresList.innerHTML = "<li style='justify-content:center'>Aucun score</li>";
+            }
+        }
+
+        function update() {
+            // Nuages
+            clouds.forEach(c => {
+                c.x -= c.speed;
+                if (c.x < -150) c.x = canvas.width + 50;
+            });
+
+            if (gameState === 'PLAYING') {
+                frameCount++;
+                score += Math.floor(gameSpeed / 4);
+                scoreEl.innerText = score;
+
+                // Progression lente
+                if (frameCount % 600 === 0 && gameSpeed < MAX_SPEED) {
+                    gameSpeed += 0.2;
+                    speedEl.innerText = (gameSpeed / START_SPEED).toFixed(1);
+                }
+
+                // --- Physique Joueur ---
+                if (keys.space && player.isGrounded) {
+                    player.dy = JUMP_FORCE;
+                    player.isGrounded = false;
+                }
+
+                if (keys.down) {
+                    player.isDucking = true;
+                    player.height = 30; player.width = 55;
+                } else {
+                    player.isDucking = false;
+                    player.height = 60; player.width = 40;
+                }
+
+                player.dy += GRAVITY;
+                player.y += player.dy;
+
+                // Sol
+                let currentGroundY = GROUND_BASE_Y;
+                if (player.y > currentGroundY - player.height) {
+                    player.y = currentGroundY - player.height;
+                    player.dy = 0;
+                    player.isGrounded = true;
+                    player.isFlipping = false;
+                    player.rotation = 0;
+                    player.canTrick = false;
+                }
+
+                // Rotation
+                if (player.isFlipping) {
+                    player.rotation -= 0.3;
+                    if (player.rotation < -Math.PI * 2) player.rotation = 0;
+                } else if (player.canTrick) {
+                    player.rotation = -0.3; // Tilt arrière "prêt à sauter"
+                } else {
+                    player.rotation = player.isGrounded ? 0.1 : -0.1;
+                }
+
+                // --- Apparition Obstacles (Espacement Augmenté) ---
+                let lastX = obstacles.length > 0 ? obstacles[obstacles.length - 1].x : 0;
+                let gap = canvas.width - lastX;
+
+                // Gap minimum augmenté à 550px pour plus de lisibilité
+                if (gap > 550) {
+                    if (Math.random() < 0.04) spawnObstacle();
+                }
+
+                // --- Logique Obstacles ---
+                for (let i = obstacles.length - 1; i >= 0; i--) {
+                    let obs = obstacles[i];
+                    obs.x -= gameSpeed * obs.speedFactor;
+
+                    let pX = player.x + 10;
+                    let pW = player.width - 20;
+                    let pY = player.y + 5;
+                    let pH = player.height - 10;
+
+                    // Rampe
+                    if (obs.type === 'RAMP') {
+                        if (pX + pW > obs.x && pX < obs.x + obs.width && pY + pH > obs.y + 10) {
+                            if (!obs.hit) {
+                                obs.hit = true;
+                                player.dy = RAMP_FORCE;
+                                player.isGrounded = false;
+                                player.y = obs.y - player.height - 5;
+                                player.canTrick = true; // Active fenêtre de trick
+                            }
+                        }
+                    }
+                    // Dangers
+                    else {
+                        let collision = false;
+                        if (obs.type === 'CREVASSE') {
+                            if (player.y >= GROUND_BASE_Y - player.height - 5) {
+                                if (pX + pW > obs.x + 10 && pX < obs.x + obs.width - 10) collision = true;
+                            }
+                        } else {
+                            if (pX < obs.x + obs.width - 5 && pX + pW > obs.x + 5 &&
+                                pY < obs.y + obs.height - 5 && pY + pH > obs.y + 5) {
+                                collision = true;
+                            }
+                        }
+                        if (collision) crash();
+                    }
+
+                    if (obs.x + obs.width < -200) obstacles.splice(i, 1);
+                }
+            } else if (gameState === 'CRASHED' || gameState === 'RESCUING') {
+                updateRescueSequence();
+            }
+        }
+
+        function crash() {
+            gameState = 'CRASHED';
+            player.isFlipping = false;
+            player.canTrick = false;
+            player.rotation = 110 * (Math.PI / 180);
+            player.y = GROUND_BASE_Y - 20;
+            helicopter.state = 'INCOMING';
+            helicopter.x = canvas.width + 200;
+            helicopter.y = -100;
+        }
+
+        function updateRescueSequence() {
+            helicopter.rotorAngle += 0.8;
+
+            if (helicopter.state === 'INCOMING') {
+                let dx = player.x - helicopter.x;
+                let dy = (player.y - 180) - helicopter.y;
+                helicopter.x += dx * 0.04;
+                helicopter.y += dy * 0.04;
+                if (Math.abs(dx) < 5 && Math.abs(dy) < 5) helicopter.state = 'HOVERING';
+            }
+            else if (helicopter.state === 'HOVERING') {
+                if (helicopter.ropeLength < 140) helicopter.ropeLength += 3;
+                else { helicopter.state = 'LIFTING'; gameState = 'RESCUING'; }
+            }
+            else if (helicopter.state === 'LIFTING') {
+                player.x = helicopter.x; player.y -= 3; helicopter.ropeLength -= 3;
+                if (helicopter.ropeLength <= 10) { helicopter.ropeLength = 10; helicopter.state = 'DEPARTING'; }
+            }
+            else if (helicopter.state === 'DEPARTING') {
+                helicopter.x -= 8; helicopter.y -= 4;
+                player.x = helicopter.x; player.y = helicopter.y + 40;
+                if (helicopter.x < -150) {
+                    gameState = 'OVER';
+                    finalScoreEl.innerText = score;
+                    saveScore(score); // Sauvegarde Score
+                    gameOverScreen.classList.remove('hidden');
+                }
+            }
+        }
+
+        // --- Dessin ---
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            drawClouds();
+
+            ctx.save();
+            ctx.translate(0, canvas.height / 2);
+            ctx.rotate(SLOPE_ANGLE);
+            ctx.translate(0, -canvas.height / 2);
+
+            // Neige
+            ctx.fillStyle = "#fff";
+            ctx.fillRect(-500, GROUND_BASE_Y, canvas.width + 1000, 1000);
+            ctx.strokeStyle = "#B3E5FC"; ctx.lineWidth = 5;
+            ctx.beginPath(); ctx.moveTo(-500, GROUND_BASE_Y); ctx.lineTo(canvas.width + 1000, GROUND_BASE_Y); ctx.stroke();
+
+            obstacles.forEach(obs => {
+                if (obs.type === 'CREVASSE') drawCrevasse(obs.x, obs.y, obs.width);
+            });
+
+            if (gameState !== 'OVER') drawSkier();
+
+            // Indice visuel pour le trick
+            if (player.canTrick && !player.isFlipping && gameState === 'PLAYING') {
+                ctx.fillStyle = "rgba(0,0,0,0.6)";
+                ctx.font = "bold 16px Arial";
+                ctx.fillText("ESPACE !", player.x - 15, player.y - 20);
+            }
+
+            obstacles.forEach(obs => {
+                if (obs.type === 'TREE') drawTree(obs.x, obs.y, obs.width, obs.height);
+                else if (obs.type === 'BIRD') drawBird(obs.x, obs.y, obs.width, obs.height);
+                else if (obs.type === 'RAMP') drawRamp(obs.x, obs.y, obs.width, obs.height);
+                else if (obs.type === 'KID') drawKid(obs.x, obs.y, obs.width, obs.height);
+            });
+
+            if (gameState === 'CRASHED' || gameState === 'RESCUING') drawHelicopter();
+
+            ctx.restore();
+        }
+
+        function drawClouds() {
+            ctx.fillStyle = "rgba(255, 255, 255, 0.7)";
+            clouds.forEach(c => {
+                ctx.save(); ctx.translate(c.x, c.y); ctx.scale(c.scale, c.scale);
+                ctx.beginPath(); ctx.arc(0, 0, 30, 0, Math.PI * 2); ctx.arc(25, -10, 40, 0, Math.PI * 2); ctx.arc(50, 0, 30, 0, Math.PI * 2); ctx.fill();
+                ctx.restore();
+            });
+        }
+
+        function drawCrevasse(x, y, w) {
+            ctx.fillStyle = "#1A237E";
+            ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x + 10, y + 40); ctx.lineTo(x + w / 2, y + 60); ctx.lineTo(x + w - 10, y + 30); ctx.lineTo(x + w, y); ctx.closePath(); ctx.fill();
+        }
+
+        function drawRamp(x, y, w, h) {
+            ctx.save(); ctx.translate(x, y);
+            ctx.fillStyle = "#fff"; ctx.beginPath(); ctx.moveTo(0, h); ctx.lineTo(w, 0); ctx.lineTo(w, h); ctx.closePath(); ctx.fill();
+            ctx.strokeStyle = "#0277BD"; ctx.lineWidth = 4; ctx.beginPath(); ctx.moveTo(5, h); ctx.lineTo(w - 5, 5); ctx.stroke();
+            ctx.restore();
+        }
+
+        function drawTree(x, y, w, h) {
+            ctx.save(); ctx.translate(x, y);
+            ctx.fillStyle = "rgba(0,0,0,0.1)"; ctx.beginPath(); ctx.ellipse(w / 2, h, w / 2, 5, 0, 0, Math.PI * 2); ctx.fill();
+            ctx.fillStyle = "#1b5e20"; ctx.beginPath(); ctx.moveTo(w / 2, 0); ctx.lineTo(w, h); ctx.lineTo(0, h); ctx.fill();
+            ctx.fillStyle = "#fff"; ctx.beginPath(); ctx.moveTo(w / 2, 0); ctx.lineTo(w / 2 + 10, 20); ctx.lineTo(w / 2 - 10, 20); ctx.fill();
+            ctx.fillStyle = "#3e2723"; ctx.fillRect(w / 2 - 4, h, 8, 8);
+            ctx.restore();
+        }
+
+        function drawBird(x, y, w, h) {
+            ctx.save(); ctx.translate(x, y);
+            ctx.fillStyle = "#37474f";
+            let flap = Math.sin(frameCount * 0.5) * 5;
+            ctx.beginPath(); ctx.moveTo(0, h / 2); ctx.quadraticCurveTo(w / 4, -flap, w / 2, h / 2 + 5); ctx.quadraticCurveTo(w * 0.75, -flap, w, h / 2); ctx.lineTo(w / 2, h / 2 + 10); ctx.fill();
+            ctx.restore();
+        }
+
+        function drawKid(x, y, w, h) {
+            ctx.save(); ctx.translate(x, y);
+            ctx.fillStyle = "rgba(0,0,0,0.1)"; ctx.beginPath(); ctx.ellipse(w / 2, h, w / 2, 4, 0, 0, Math.PI * 2); ctx.fill();
+            ctx.strokeStyle = "#FFA000"; ctx.lineWidth = 4;
+            ctx.beginPath(); ctx.moveTo(w / 2 - 2, h); ctx.lineTo(w / 2 - 10, h + 10); ctx.moveTo(w / 2 + 2, h); ctx.lineTo(w / 2 + 10, h + 10); ctx.stroke();
+            ctx.fillStyle = "#76FF03"; ctx.fillRect(5, 15, w - 10, h - 15);
+            ctx.fillStyle = "#ffcc80"; ctx.beginPath(); ctx.arc(w / 2, 12, 10, 0, Math.PI * 2); ctx.fill();
+            ctx.fillStyle = "#D500F9"; ctx.beginPath(); ctx.arc(w / 2, 10, 11, Math.PI, 0); ctx.fill();
+            ctx.restore();
+        }
+
+        function drawSkier() {
+            ctx.save();
+            ctx.translate(player.x + player.width / 2, player.y + player.height / 2);
+            ctx.rotate(player.rotation);
+
+            const w = player.width;
+            const h = player.height;
+            const hw = w / 2;
+            const hh = h / 2;
+
+            if (!player.isFlipping) {
+                ctx.fillStyle = "rgba(0,0,0,0.1)"; ctx.beginPath(); ctx.ellipse(0, hh, w / 1.5, 4, 0, 0, Math.PI * 2); ctx.fill();
+            }
+
+            ctx.fillStyle = "#424242";
+            ctx.beginPath(); ctx.roundRect(-hw - 10, hh - 5, w + 20, 6, 3); ctx.fill();
+
+            if (player.isDucking) {
+                ctx.fillStyle = player.color; ctx.beginPath(); ctx.arc(0, hh - 15, 15, 0, Math.PI * 2); ctx.fill();
+                ctx.fillStyle = "#ffcc80"; ctx.beginPath(); ctx.arc(8, hh - 20, 9, 0, Math.PI * 2); ctx.fill();
+            } else {
+                ctx.fillStyle = "#0d47a1"; ctx.fillRect(-hw + 8, 0, w - 16, hh);
+                ctx.fillStyle = player.color; ctx.fillRect(-hw + 5, -hh + 10, w - 10, hh);
+                ctx.fillStyle = "#ffcc80"; ctx.beginPath(); ctx.arc(0, -hh + 5, 10, 0, Math.PI * 2); ctx.fill();
+                ctx.fillStyle = "#333"; ctx.fillRect(2, -hh + 2, 8, 4);
+                ctx.strokeStyle = "#fff"; ctx.lineWidth = 4; ctx.beginPath(); ctx.moveTo(0, -hh + 12); ctx.lineTo(-20, -hh + 10 - Math.sin(frameCount * 0.5) * 3); ctx.stroke();
+            }
+            ctx.restore();
+        }
+
+        function drawHelicopter() {
+            const x = helicopter.x; const y = helicopter.y;
+            ctx.save(); ctx.translate(x, y); ctx.rotate(0.2);
+            if (helicopter.ropeLength > 0) {
+                ctx.strokeStyle = "#212121"; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(0, 15); ctx.lineTo(0, 15 + helicopter.ropeLength); ctx.stroke();
+                ctx.fillStyle = "#fbc02d"; ctx.beginPath(); ctx.arc(0, 15 + helicopter.ropeLength, 6, 0, Math.PI * 2); ctx.fill();
+            }
+            ctx.fillStyle = "#d84315"; ctx.beginPath(); ctx.moveTo(30, 0); ctx.lineTo(-20, -15); ctx.lineTo(-30, 10); ctx.lineTo(30, 10); ctx.fill();
+            ctx.beginPath(); ctx.arc(0, 0, 25, 0, Math.PI * 2); ctx.fill();
+            ctx.fillStyle = "#fff"; ctx.fillRect(-15, -5, 30, 10);
+            ctx.fillStyle = "red"; ctx.font = "bold 10px Arial"; ctx.fillText("+", -3, 4);
+            ctx.fillStyle = "#81d4fa"; ctx.beginPath(); ctx.arc(10, 0, 15, 0, Math.PI / 2, false); ctx.lineTo(10, -10); ctx.fill();
+            ctx.fillStyle = "#d84315"; ctx.fillRect(-60, -5, 40, 8);
+            ctx.beginPath(); ctx.arc(-60, -1, 10, 0, Math.PI * 2); ctx.fill();
+            ctx.strokeStyle = "#333"; ctx.lineWidth = 4; ctx.beginPath();
+            const bladeW = 80 * Math.sin(helicopter.rotorAngle);
+            ctx.moveTo(-bladeW, -20); ctx.lineTo(bladeW, -20); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(0, -20); ctx.lineTo(0, -10); ctx.stroke();
+            ctx.restore();
+        }
+
+        function loop() {
+            update();
+            draw();
+            gameLoopId = requestAnimationFrame(loop);
+        }
+
+        init();
+        draw();
+    </script>
+</body>
+
+</html>
