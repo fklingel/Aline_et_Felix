@@ -316,7 +316,7 @@
                     }
 
                     if (canSpawn) {
-                        const isLong = Math.random() > 0.7;
+                        const isLong = Math.random() > 0.85; // Plus rare (15% chance vs 30%)
                         const duration = isLong ? 500 + Math.random() * 1000 : 0; // ms
 
                         notes.push({
@@ -383,18 +383,21 @@
                             targetNote.active = false; // Note simple finie
                         }
 
-                        score += points + (combo * 5);
+                        score += Math.ceil((points + (combo * 5)) * 1.25);
                         combo++;
 
                         triggerFeedback(text, color);
                         createSplashEffect(swimmers[0]);
 
                     } else {
-                        // Trop tôt (on ne casse le combo que si vraiment loin ?)
-                        // Pour l'instant simple : Miss si input au mauvais moment
-                        // combo = 0;
-                        // triggerFeedback("...", "#FF5252");
+                        // Trop tôt ou trop tard (Miss)
+                        combo = 0;
+                        triggerFeedback("OUPS", "#FF5252");
                     }
+                } else {
+                    // Aucune note présente dans cette direction
+                    combo = 0;
+                    triggerFeedback("...", "#FF5252");
                 }
             },
 
@@ -416,29 +419,42 @@
             }
         };
 
+        // --- Configuration ---
+        // ... (existing configs)
+        let GAME_SCALE = 1.0;
+
+        // ...
+
         // --- Resize Handler ---
         function resize() {
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
 
             CENTER_X = canvas.width / 2;
-            TARGET_Y = canvas.height - 100; // Target line near bottom
+            TARGET_Y = canvas.height - 100;
 
-            // Calculate Lane Width to fit screen, max 100px
             const maxLaneWidth = 100;
-            const availableWidth = Math.min(canvas.width, 600); // Max game width
+            let availableWidth = Math.min(canvas.width, 600);
+
+            // Mobile "Zoom Out"
+            if (window.innerWidth < 800) {
+                availableWidth *= 0.75;
+            }
+
             LANE_WIDTH = availableWidth / 4;
+
+            // Calculate Global Scale based on baseline 600px width
+            GAME_SCALE = availableWidth / 600;
 
             START_X = CENTER_X - (LANE_WIDTH * 2);
 
             feedback.y = TARGET_Y - 50;
 
-            // Re-init swimmers positions if game not running or forcing update
-            if (!Game.isPlaying) initSwimmers();
+            // Re-init swimmers positions
+            initSwimmers();
         }
         window.addEventListener('resize', resize);
         resize();
-
 
         function drawFeedbackText() {
             if (feedback.opacity <= 0) return;
@@ -472,16 +488,16 @@
         }
 
         function initSwimmers() {
-            // Position Swimmers relative to Canvas Size
             const cy = canvas.height * 0.5;
             const cx = canvas.width * 0.5;
+            const s = GAME_SCALE;
 
             swimmers = [
-                { id: 0, x: cx, y: cy, scale: 1.0, isPlayer: true, state: 'IDLE', timer: 0 },   // Joueuse
-                { id: 1, x: cx - 120, y: cy + 20, scale: 0.85, isPlayer: false, state: 'IDLE', timer: 0 }, // AI Gauche
-                { id: 2, x: cx + 120, y: cy + 20, scale: 0.85, isPlayer: false, state: 'IDLE', timer: 0 }, // AI Droite
-                { id: 3, x: cx - 60, y: cy - 80, scale: 0.7, isPlayer: false, state: 'IDLE', timer: 0 },  // AI Arrière G
-                { id: 4, x: cx + 60, y: cy - 80, scale: 0.7, isPlayer: false, state: 'IDLE', timer: 0 }   // AI Arrière D
+                { id: 0, x: cx, y: cy, scale: 1.0 * s, isPlayer: true, state: 'IDLE', timer: 0 },
+                { id: 1, x: cx - 120 * s, y: cy + 20 * s, scale: 0.85 * s, isPlayer: false, state: 'IDLE', timer: 0 },
+                { id: 2, x: cx + 120 * s, y: cy + 20 * s, scale: 0.85 * s, isPlayer: false, state: 'IDLE', timer: 0 },
+                { id: 3, x: cx - 60 * s, y: cy - 80 * s, scale: 0.7 * s, isPlayer: false, state: 'IDLE', timer: 0 },
+                { id: 4, x: cx + 60 * s, y: cy - 80 * s, scale: 0.7 * s, isPlayer: false, state: 'IDLE', timer: 0 }
             ];
         }
 
@@ -499,29 +515,31 @@
         }
 
         function createSplashEffect(swimmer) {
+            const s = GAME_SCALE;
             for (let i = 0; i < 6; i++) {
                 particles.push({
-                    x: swimmer.x + (Math.random() * 40 - 20),
-                    y: swimmer.y + (Math.random() * 20 - 10),
-                    vx: (Math.random() - 0.5) * 100,
-                    vy: (Math.random() - 1) * 100 - 50,
+                    x: swimmer.x + (Math.random() * 40 * s - 20 * s),
+                    y: swimmer.y + (Math.random() * 20 * s - 10 * s),
+                    vx: (Math.random() - 0.5) * 100 * s,
+                    vy: (Math.random() - 1) * 100 * s - 50 * s,
                     life: 1.0,
                     color: `rgba(224, 247, 250, ${Math.random()})`,
-                    size: Math.random() * 5 + 2
+                    size: (Math.random() * 5 + 2) * s
                 });
             }
         }
 
         function createExplosion(x, y, color) {
+            const s = GAME_SCALE;
             for (let i = 0; i < 8; i++) {
                 particles.push({
                     x: x,
                     y: y,
-                    vx: (Math.random() - 0.5) * 250,
-                    vy: (Math.random() - 0.5) * 250,
+                    vx: (Math.random() - 0.5) * 250 * s,
+                    vy: (Math.random() - 0.5) * 250 * s,
                     life: 0.5,
                     color: color,
-                    size: Math.random() * 8 + 4
+                    size: (Math.random() * 8 + 4) * s
                 });
             }
         }
@@ -536,8 +554,11 @@
             if (e.code === 'ArrowDown') dir = 'DOWN';
             if (e.code === 'ArrowRight') dir = 'RIGHT';
 
-            if (dir && !keysState[dir]) { // Prevent repeat on hold
-                Game.handlePress(dir);
+            if (dir) {
+                e.preventDefault(); // STOP SCROLLING
+                if (!keysState[dir]) { // Prevent repeat on hold
+                    Game.handlePress(dir);
+                }
             }
         });
 
@@ -644,7 +665,7 @@
                     // Score continu
                     // n.scoreTimer += dt;
                     // if (n.scoreTimer > 0.1) { ... score++ ... }
-                    score += Math.ceil(10 * dt * 60); // approx points per frame
+                    score += Math.ceil(3 * dt * 60 * 1.25); // Reduced points * 1.25 Multiplier
 
                     // Effet visuel continu
                     if (Math.random() > 0.5) {
@@ -654,7 +675,8 @@
                     // Fin de la note longue
                     if (n.length <= 0) {
                         n.active = false;
-                        score += 100; // Bonus fin
+                        n.isHeld = false; // STOP HOLDING to prevent multi-trigger
+                        score += 125; // Bonus fin (100 * 1.25)
                         triggerFeedback("COOL", "#00E676");
                     }
 
@@ -712,7 +734,9 @@
             musicPlayer.pause();
 
             saveScore(score);
-            document.getElementById('finalScore').innerText = score;
+            let grade = Math.min(10, score / 1000).toFixed(1);
+            localStorage.setItem('grade_aline', grade);
+            document.getElementById('finalScore').innerText = score + " (Note: " + grade + "/10)";
 
             document.getElementById('hud').classList.add('hidden');
             document.getElementById('end-screen').classList.remove('hidden');
@@ -728,7 +752,7 @@
                 ctx.strokeStyle = "rgba(255,255,255,0.2)";
                 ctx.lineWidth = 3;
                 ctx.beginPath();
-                let r = (time * 40 + i * 120) % 400;
+                let r = ((time * 40 + i * 120) % 400) * GAME_SCALE; // Scale waves
                 ctx.arc(CENTER_X, canvas.height * 0.5, r, 0, Math.PI * 2);
                 ctx.stroke();
             }

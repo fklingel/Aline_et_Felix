@@ -42,7 +42,8 @@
             top: 30%;
             left: 50%;
             transform: translate(-50%, -50%);
-            font-size: 56px;
+            font-size: clamp(30px, 10vw, 56px);
+            /* Responsive font size */
             font-weight: 900;
             font-style: italic;
             color: #FFD700;
@@ -51,6 +52,10 @@
             transition: opacity 0.2s, transform 0.2s;
             pointer-events: none;
             z-index: 10;
+            width: 100%;
+            text-align: center;
+            white-space: nowrap;
+            /* Force single line */
         }
 
         .show-trick {
@@ -66,21 +71,27 @@
             transform: translate(-50%, -50%);
             text-align: center;
             background: rgba(255, 255, 255, 0.95);
-            padding: 30px;
+            padding: 20px;
+            /* Reduced padding */
             border-radius: 15px;
             box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
-            min-width: 300px;
-            /* Reduced for mobile */
-            max-width: 90%;
+            width: 85%;
+            /* Percentage width */
+            max-width: 400px;
+            /* Max cap */
             z-index: 20;
+            box-sizing: border-box;
+            /* Ensure padding doesn't overflow */
         }
 
         h1 {
             margin: 0 0 10px 0;
             color: #d32f2f;
             font-style: italic;
-            font-size: 32px;
+            font-size: clamp(24px, 5vw, 32px);
+            /* Responsive font size */
         }
+
 
         p {
             color: #455a64;
@@ -89,7 +100,8 @@
         }
 
         button {
-            background-color: #d32f2f;
+            background-color: #2196F3;
+            /* Blue to verify update */
             color: white;
             border: none;
             padding: 15px 40px;
@@ -218,6 +230,7 @@
         // --- Zoom Configuration (Dynamic) ---
         let ZOOM = 1;
         let CAMERA_Y_OFFSET = 0;
+        let CAMERA_X_OFFSET = 0;
 
         // --- État du Jeu ---
         let gameSpeed = START_SPEED;
@@ -258,8 +271,10 @@
 
         // --- Resize Handler & Performance ---
         function resize() {
-            // Cap pixel ratio for performance (max 1.5 is usually enough for games)
-            const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+            const isMobile = window.innerWidth < 800;
+
+            // Performance: Force DPR 1.0 on mobile to prevent lag
+            const dpr = isMobile ? 1.0 : Math.min(window.devicePixelRatio || 1, 1.5);
 
             canvas.width = window.innerWidth * dpr;
             canvas.height = window.innerHeight * dpr;
@@ -273,14 +288,16 @@
             ctx.scale(dpr, dpr);
 
             // Responsive Logic
-            if (window.innerWidth < 800) {
+            if (isMobile) {
                 // Mobile
-                ZOOM = 0.45;
-                CAMERA_Y_OFFSET = 100; // Less extreme offset
+                ZOOM = 0.5;
+                CAMERA_Y_OFFSET = 350; // Slightly higher (was 500)
+                CAMERA_X_OFFSET = -50;
             } else {
                 // Desktop
                 ZOOM = 1.0;
                 CAMERA_Y_OFFSET = 0;
+                CAMERA_X_OFFSET = 0;
             }
 
             // Virtual dimensions logic remains based on logical pixels (window.innerWidth/Height)
@@ -430,7 +447,7 @@
         function performBackflip() {
             player.isFlipping = true;
             player.canTrick = false;
-            score += 500;
+            score += 375; // 500 * 0.75
 
             trickText.innerText = "BACKFLIP !";
             trickText.classList.remove('show-trick');
@@ -467,7 +484,7 @@
 
             if (gameState === 'PLAYING') {
                 frameCount++;
-                score += Math.floor(gameSpeed / 4);
+                score += Math.floor((gameSpeed / 4) * 0.75);
                 scoreEl.innerText = score;
 
                 if (frameCount % 600 === 0 && gameSpeed < MAX_SPEED) {
@@ -499,6 +516,7 @@
                     player.isFlipping = false;
                     player.rotation = 0;
                     player.canTrick = false;
+                    player.flipAngle = 0; // Fix reset
                 }
 
                 if (player.isFlipping) {
@@ -594,7 +612,9 @@
                 player.x = helicopter.x; player.y = helicopter.y + 40;
                 if (helicopter.x < -150) {
                     gameState = 'OVER';
-                    finalScoreEl.innerText = score;
+                    let grade = Math.min(10, score / 1000).toFixed(1);
+                    localStorage.setItem('grade_felix', grade);
+                    finalScoreEl.innerText = score + " (Note: " + grade + "/10)";
                     saveScore(score);
                     gameOverScreen.classList.remove('hidden');
                 }
@@ -611,7 +631,7 @@
             drawClouds();
 
             // Center of screen (Pivot for rotation) + Vertical Offset to lower the view
-            ctx.translate(0, (vHeight / 2) + CAMERA_Y_OFFSET);
+            ctx.translate(CAMERA_X_OFFSET, (vHeight / 2) + CAMERA_Y_OFFSET);
             ctx.rotate(SLOPE_ANGLE);
             ctx.translate(0, -(vHeight / 2)); // Rotate around center, but keep offset translation
 

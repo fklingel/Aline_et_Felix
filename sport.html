@@ -13,9 +13,14 @@
         href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Nunito:wght@400;700&display=swap"
         rel="stylesheet">
     <style>
+        * {
+            box-sizing: border-box;
+        }
+
         .character-selection {
             display: flex;
-            gap: 40px;
+            gap: 20px;
+            /* Reduced gap for better fit */
             justify-content: center;
             align-items: stretch;
             margin-top: 30px;
@@ -26,7 +31,12 @@
             background: white;
             border-radius: 15px;
             padding: 30px;
-            width: 280px;
+            flex: 1 1 280px;
+            /* Grow, shrink, basis */
+            max-width: 400px;
+            /* Limit max width */
+            min-width: 260px;
+            /* Prevent becoming too thin */
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
             transition: transform 0.3s ease, box-shadow 0.3s ease;
             cursor: pointer;
@@ -160,8 +170,9 @@
             }
 
             .character-card {
-                width: 90%;
-                max-width: 350px;
+                width: 100%;
+                /* Full width on mobile */
+                max-width: 400px;
             }
 
             .game-iframe {
@@ -186,6 +197,9 @@
         <div id="selection-screen">
             <header>
                 <h1>Épreuve de Sport</h1>
+                <h2 style="font-family: 'Dancing Script', cursive; font-size: 32px; color: #5a4e49; margin-top: 5px;">
+                    Note Globale : <span id="global-grade-value">0</span>/20
+                </h2>
                 <p>Choisissez votre athlète et battez votre record !</p>
             </header>
 
@@ -205,6 +219,10 @@
                                 <div class="highscore-label">Meilleur Score</div>
                                 <div class="highscore-value" id="aline-highscore">0</div>
                             </div>
+                            <div class="highscore-display" style="margin-top: -10px; background: #E0F7FA;">
+                                <div class="highscore-label">Note de Synchro</div>
+                                <div class="highscore-value" style="color: #00BCD4;" id="aline-grade">0/10</div>
+                            </div>
                             <button class="play-button">Jouer à Danse Aquatique</button>
                         </div>
                     </div>
@@ -223,6 +241,10 @@
                             <div class="highscore-display">
                                 <div class="highscore-label">Meilleur Score</div>
                                 <div class="highscore-value" id="felix-highscore">0</div>
+                            </div>
+                            <div class="highscore-display" style="margin-top: -10px; background: #FFEBEE;">
+                                <div class="highscore-label">Note de Ski</div>
+                                <div class="highscore-value" style="color: #d32f2f;" id="felix-grade">0/10</div>
                             </div>
                             <button class="play-button">Jouer à Descente Alpine</button>
                         </div>
@@ -250,6 +272,16 @@
 
             document.getElementById('aline-highscore').textContent = alineHighscore;
             document.getElementById('felix-highscore').textContent = felixHighscore;
+
+            // Grades
+            const gradeAline = parseFloat(localStorage.getItem('grade_aline')) || 0;
+            const gradeFelix = parseFloat(localStorage.getItem('grade_felix')) || 0;
+
+            document.getElementById('aline-grade').textContent = gradeAline.toFixed(1) + "/10";
+            document.getElementById('felix-grade').textContent = gradeFelix.toFixed(1) + "/10";
+
+            const globalGrade = (gradeAline + gradeFelix).toFixed(1);
+            document.getElementById('global-grade-value').textContent = globalGrade;
         }
 
         function playGame(character) {
