@@ -1,0 +1,136 @@
+/* style-geo.css */
+
+.geo-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: white;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.question-container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.image-container {
+    width: 100%;
+    max-height: 400px;
+    overflow: hidden;
+    border-radius: 10px;
+    display: flex;
+    justify-content: center;
+    background-color: #f0f0f0;
+}
+
+.question-image {
+    max-width: 100%;
+    max-height: 400px;
+    object-fit: contain;
+}
+
+.question-text {
+    font-size: 1.2rem;
+    color: #5a4e49;
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+#map {
+    height: 400px;
+    width: 100%;
+    border-radius: 10px;
+    border: 2px solid #ccc;
+    z-index: 1;
+    /* Ensure map controls are clickable but not covering other important UI if any overlay */
+}
+
+.controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 20px;
+}
+
+.score-display {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #5a4e49;
+}
+
+#validate-btn,
+#next-btn {
+    padding: 12px 25px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: white;
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: transform 0.2s, background-color 0.2s;
+}
+
+#validate-btn {
+    background-color: #4CAF50;
+    /* Green */
+}
+
+#validate-btn:hover {
+    background-color: #45a049;
+    transform: scale(1.05);
+}
+
+#validate-btn:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+    transform: none;
+}
+
+#next-btn {
+    background-color: #2196F3;
+    /* Blue */
+    display: none;
+    /* Hidden initially */
+}
+
+#next-btn:hover {
+    background-color: #1e88e5;
+    transform: scale(1.05);
+}
+
+.result-feedback {
+    text-align: center;
+    margin-top: 15px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    min-height: 1.5em;
+}
+
+.final-screen {
+    text-align: center;
+    padding: 40px;
+}
+
+.final-score-large {
+    font-size: 3rem;
+    color: #FF9800;
+    margin: 20px 0;
+    font-family: 'Dancing Script', cursive;
+}
+
+@media (max-width: 768px) {
+    #map {
+        height: 300px;
+    }
+
+    .geo-container {
+        padding: 15px;
+        width: 95%;
+    }
+
+    .question-text {
+        font-size: 1rem;
+    }
+}

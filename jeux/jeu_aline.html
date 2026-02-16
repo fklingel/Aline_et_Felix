@@ -11,33 +11,26 @@
             padding: 0;
             background-color: #006064;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
             overflow: hidden;
+            /* Prevent scroll */
             color: white;
             user-select: none;
             touch-action: none;
+            /* Crucial for mobile game */
         }
 
         #gameContainer {
+            width: 100vw;
+            height: 100vh;
             position: relative;
-            box-shadow: 0 0 50px rgba(0, 255, 255, 0.2);
-            border-radius: 12px;
             overflow: hidden;
-            border: 4px solid #fff;
-            width: 800px;
-            height: 600px;
-            max-width: 100%;
-            max-height: 100%;
+            background: radial-gradient(circle at center, #00BCD4 0%, #0097A7 60%, #006064 100%);
         }
 
         canvas {
             display: block;
             width: 100%;
             height: 100%;
-            background: radial-gradient(circle at center, #00BCD4 0%, #0097A7 60%, #006064 100%);
         }
 
         /* Interface Utilisateur */
@@ -69,7 +62,8 @@
             text-align: center;
             position: absolute;
             width: 100%;
-            top: 100px;
+            top: 15%;
+            /* Responsive positioning */
             opacity: 0;
             transition: opacity 0.2s;
             z-index: 5;
@@ -91,14 +85,22 @@
             text-align: center;
             backdrop-filter: blur(5px);
             z-index: 20;
+            padding: 20px;
+            box-sizing: border-box;
         }
 
         h1 {
-            font-size: 48px;
+            font-size: clamp(32px, 8vw, 48px);
             margin: 0 0 10px 0;
             color: #E0F7FA;
             text-transform: uppercase;
             letter-spacing: 3px;
+        }
+
+        @media (min-width: 600px) {
+            h1 {
+                font-size: 48px;
+            }
         }
 
         p {
@@ -121,10 +123,16 @@
             cursor: pointer;
             box-shadow: 0 5px 15px rgba(245, 0, 87, 0.4);
             transition: transform 0.2s;
+            pointer-events: auto;
+            /* Ensure clickable */
         }
 
         button:hover {
             transform: scale(1.05);
+        }
+
+        button:active {
+            transform: scale(0.95);
         }
 
         .hidden {
@@ -148,13 +156,6 @@
             font-weight: bold;
         }
 
-        .mobile-hint {
-            margin-top: 10px;
-            font-size: 14px;
-            color: #81D4FA;
-            font-style: italic;
-        }
-
         /* Leaderboard Style */
         #leaderboard {
             margin-top: 20px;
@@ -163,6 +164,7 @@
             border-radius: 10px;
             border: 1px solid rgba(255, 255, 255, 0.3);
             width: 250px;
+            max-width: 90%;
         }
 
         #leaderboard h3 {
@@ -197,7 +199,7 @@
 <body>
 
     <div id="gameContainer">
-        <canvas id="gameCanvas" width="800" height="600"></canvas>
+        <canvas id="gameCanvas"></canvas>
 
         <div id="hud" class="hidden">
             <div>SCORE: <span id="scoreVal">0</span></div>
@@ -207,15 +209,16 @@
 
         <div id="start-screen">
             <h1>Aqua Rythme</h1>
-            <p>Vous êtes la Star (Nageuse au centre).</p>
+            <p><strong>Notes Longues</strong> : Maintenez la touche !</p>
             <div class="key-row">
                 <div class="key">←</div>
                 <div class="key">↑</div>
                 <div class="key">↓</div>
                 <div class="key">→</div>
             </div>
-            <p class="mobile-hint">Touchez les flèches sur l'écran ou utilisez le clavier.</p>
-            <button onclick="startGame()">Commencer le Ballet</button>
+            <p class="mobile-hint" style="font-style:italic; margin-top:15px; font-size:14px;">Sur mobile : Touchez les
+                colonnes.</p>
+            <button onclick="startGame()">Plonger</button>
         </div>
 
         <div id="end-screen" class="hidden">
@@ -238,11 +241,7 @@
         // ==========================================
         // CONFIGURATION MUSIQUE
         // ==========================================
-        // Remplacez 'votre_musique.mp3' par le chemin de votre fichier
         const CHEMIN_MUSIQUE = '../audio/Caravan Palace - Wonderland.mp3';
-
-        // Ajustez les BPM (Battements Par Minute) pour synchroniser la vitesse des flèches
-        // Essayez entre 90 et 130 selon la chanson.
         const BPM = 100;
         // ==========================================
 
@@ -254,15 +253,16 @@
         const ctx = canvas.getContext('2d');
         const highscoresList = document.getElementById('highscoresList');
 
-        // Constantes
-        const ARROW_SPEED = (BPM / 60) * 180; // Vitesse calculée selon les BPM
-        const TARGET_Y = 500;
-        const SPAWN_Y = -50;
-        const PERFECT_THRESHOLD = 30;
-        const GOOD_THRESHOLD = 70;
-        const LANE_WIDTH = 80;
-        const CENTER_X = 400;
-        const START_X = CENTER_X - (LANE_WIDTH * 2);
+        // Constantes dynamiques (calculées dans resize)
+        let LANE_WIDTH = 80;
+        let CENTER_X = 400;
+        let START_X = 0;
+        let TARGET_Y = 500;
+
+        const ARROW_SPEED = (BPM / 60) * 200; // Pixels per sec
+        const SPAWN_Y = -150;
+        const PERFECT_THRESHOLD = 40;
+        const GOOD_THRESHOLD = 90;
 
         // État du jeu
         let notes = [];
@@ -272,6 +272,15 @@
         let timeLeft = 40;
         let lastTime = 0;
         let spawnTimer = 0;
+        let gameLoopId;
+
+        // Input State (Pour les notes longues)
+        let keysState = {
+            'LEFT': false,
+            'UP': false,
+            'DOWN': false,
+            'RIGHT': false
+        };
 
         // Feedback Visuel
         let feedback = {
@@ -279,7 +288,7 @@
             color: "#fff",
             scale: 1,
             opacity: 0,
-            y: TARGET_Y
+            y: 0
         };
 
         // Nageuses
@@ -290,14 +299,42 @@
 
             spawnNote() {
                 const directions = ['LEFT', 'UP', 'DOWN', 'RIGHT'];
-                const dir = directions[Math.floor(Math.random() * directions.length)];
-                notes.push({
-                    dir: dir,
-                    y: SPAWN_Y,
-                    active: true,
-                    aiTriggered: false,
-                    color: this.getColor(dir)
-                });
+                // Essayer de trouver une direction libre
+                directions.sort(() => Math.random() - 0.5);
+
+                for (let dir of directions) {
+                    // Check for overlap with the last note in this direction
+                    const recentNote = notes.filter(n => n.dir === dir && n.active).sort((a, b) => a.y - b.y)[0];
+
+                    let canSpawn = true;
+                    if (recentNote) {
+                        const tailEnd = recentNote.y - recentNote.length;
+                        // Ensure tail has cleared spawn point with a gap
+                        if (tailEnd < SPAWN_Y + 50) {
+                            canSpawn = false;
+                        }
+                    }
+
+                    if (canSpawn) {
+                        const isLong = Math.random() > 0.7;
+                        const duration = isLong ? 500 + Math.random() * 1000 : 0; // ms
+
+                        notes.push({
+                            dir: dir,
+                            y: SPAWN_Y,
+                            active: true,
+                            aiTriggered: false,
+                            color: this.getColor(dir),
+                            isLong: isLong,
+                            duration: duration,
+                            length: (duration / 1000) * ARROW_SPEED,
+                            isHeld: false,
+                            wasHit: false, // Tête touchée
+                            scoreTimer: 0
+                        });
+                        return; // Spawned one note, stop
+                    }
+                }
             },
 
             getColor(dir) {
@@ -309,34 +346,41 @@
                 }
             },
 
-            handleInput(dir) {
+            // Appelée quand on appuie (TouchStart / KeyDown)
+            handlePress(dir) {
                 if (!this.isPlaying) return;
 
-                // Animation immédiate de la joueuse
                 triggerSwimmerMove(swimmers[0], dir);
+                keysState[dir] = true;
 
-                // Logique de validation
-                const candidates = notes.filter(n => n.active && n.dir === dir);
+                // Trouver la note
+                const candidates = notes.filter(n => n.active && n.dir === dir && !n.wasHit && !n.isHeld);
 
                 if (candidates.length > 0) {
-                    // Trier par proximité
                     candidates.sort((a, b) => Math.abs(a.y - TARGET_Y) - Math.abs(b.y - TARGET_Y));
                     const targetNote = candidates[0];
                     const dist = Math.abs(targetNote.y - TARGET_Y);
 
                     if (dist < GOOD_THRESHOLD) {
-                        // TOUCHÉ
-                        targetNote.active = false;
+                        // HIT
+                        targetNote.wasHit = true;
 
                         let points = 50;
                         let text = "BIEN";
-                        let color = "#FFEB3B"; // Jaune
+                        let color = "#FFEB3B";
 
                         if (dist < PERFECT_THRESHOLD) {
                             points = 100;
                             text = "PARFAIT";
-                            color = "#00E676"; // Vert
+                            color = "#00E676";
                             createExplosion(centerXForDir(dir), TARGET_Y, targetNote.color);
+                        }
+
+                        if (targetNote.isLong) {
+                            targetNote.isHeld = true; // Commence le hold
+                            text = "TENIR !";
+                        } else {
+                            targetNote.active = false; // Note simple finie
                         }
 
                         score += points + (combo * 5);
@@ -346,18 +390,78 @@
                         createSplashEffect(swimmers[0]);
 
                     } else {
-                        // Trop tôt / Trop tard
-                        combo = 0;
-                        triggerFeedback("RATÉ", "#FF5252");
+                        // Trop tôt (on ne casse le combo que si vraiment loin ?)
+                        // Pour l'instant simple : Miss si input au mauvais moment
+                        // combo = 0;
+                        // triggerFeedback("...", "#FF5252");
                     }
-                } else {
-                    // Pas de note
-                    combo = 0;
-                    triggerFeedback("RATÉ", "#FF5252");
                 }
-                updateHUD();
+            },
+
+            // Appelée quand on relâche (TouchEnd / KeyUp)
+            handleRelease(dir) {
+                keysState[dir] = false;
+
+                // Stopper le hold pour les notes actives de cette direction
+                notes.forEach(n => {
+                    if (n.active && n.dir === dir && n.isHeld) {
+                        n.isHeld = false;
+                        // Si relâché trop tôt (reste de la longueur)
+                        if (n.length > 0) {
+                            // On pourrait pénaliser, ou juste arrêter de marquer des points
+                            // Option: Note grisée
+                        }
+                    }
+                });
             }
         };
+
+        // --- Resize Handler ---
+        function resize() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+
+            CENTER_X = canvas.width / 2;
+            TARGET_Y = canvas.height - 100; // Target line near bottom
+
+            // Calculate Lane Width to fit screen, max 100px
+            const maxLaneWidth = 100;
+            const availableWidth = Math.min(canvas.width, 600); // Max game width
+            LANE_WIDTH = availableWidth / 4;
+
+            START_X = CENTER_X - (LANE_WIDTH * 2);
+
+            feedback.y = TARGET_Y - 50;
+
+            // Re-init swimmers positions if game not running or forcing update
+            if (!Game.isPlaying) initSwimmers();
+        }
+        window.addEventListener('resize', resize);
+        resize();
+
+
+        function drawFeedbackText() {
+            if (feedback.opacity <= 0) return;
+
+            ctx.save();
+            ctx.globalAlpha = feedback.opacity;
+            ctx.translate(CENTER_X, feedback.y);
+            ctx.scale(feedback.scale, feedback.scale);
+
+            ctx.font = "900 40px 'Segoe UI', Arial";
+            ctx.textAlign = "center";
+
+            // Contour
+            ctx.lineWidth = 4;
+            ctx.strokeStyle = "black";
+            ctx.strokeText(feedback.text, 0, 0);
+
+            // Remplissage
+            ctx.fillStyle = feedback.color;
+            ctx.fillText(feedback.text, 0, 0);
+
+            ctx.restore();
+        }
 
         function centerXForDir(dir) {
             let idx = 0;
@@ -368,12 +472,16 @@
         }
 
         function initSwimmers() {
+            // Position Swimmers relative to Canvas Size
+            const cy = canvas.height * 0.5;
+            const cx = canvas.width * 0.5;
+
             swimmers = [
-                { id: 0, x: 400, y: 300, scale: 1.0, isPlayer: true, state: 'IDLE', timer: 0 },   // Joueuse
-                { id: 1, x: 280, y: 320, scale: 0.85, isPlayer: false, state: 'IDLE', timer: 0 }, // AI Gauche
-                { id: 2, x: 520, y: 320, scale: 0.85, isPlayer: false, state: 'IDLE', timer: 0 }, // AI Droite
-                { id: 3, x: 350, y: 220, scale: 0.7, isPlayer: false, state: 'IDLE', timer: 0 },  // AI Arrière G
-                { id: 4, x: 450, y: 220, scale: 0.7, isPlayer: false, state: 'IDLE', timer: 0 }   // AI Arrière D
+                { id: 0, x: cx, y: cy, scale: 1.0, isPlayer: true, state: 'IDLE', timer: 0 },   // Joueuse
+                { id: 1, x: cx - 120, y: cy + 20, scale: 0.85, isPlayer: false, state: 'IDLE', timer: 0 }, // AI Gauche
+                { id: 2, x: cx + 120, y: cy + 20, scale: 0.85, isPlayer: false, state: 'IDLE', timer: 0 }, // AI Droite
+                { id: 3, x: cx - 60, y: cy - 80, scale: 0.7, isPlayer: false, state: 'IDLE', timer: 0 },  // AI Arrière G
+                { id: 4, x: cx + 60, y: cy - 80, scale: 0.7, isPlayer: false, state: 'IDLE', timer: 0 }   // AI Arrière D
             ];
         }
 
@@ -418,12 +526,64 @@
             }
         }
 
+        // --- Gestion des Inputs ---
+        // Clavier
+        window.addEventListener('keydown', (e) => {
+            if (e.defaultPrevented) return;
+            let dir = null;
+            if (e.code === 'ArrowLeft') dir = 'LEFT';
+            if (e.code === 'ArrowUp') dir = 'UP';
+            if (e.code === 'ArrowDown') dir = 'DOWN';
+            if (e.code === 'ArrowRight') dir = 'RIGHT';
+
+            if (dir && !keysState[dir]) { // Prevent repeat on hold
+                Game.handlePress(dir);
+            }
+        });
+
+        window.addEventListener('keyup', (e) => {
+            let dir = null;
+            if (e.code === 'ArrowLeft') dir = 'LEFT';
+            if (e.code === 'ArrowUp') dir = 'UP';
+            if (e.code === 'ArrowDown') dir = 'DOWN';
+            if (e.code === 'ArrowRight') dir = 'RIGHT';
+
+            if (dir) Game.handleRelease(dir);
+        });
+
+        // Touch
+        canvas.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            for (let i = 0; i < e.changedTouches.length; i++) {
+                let touch = e.changedTouches[i];
+                let dir = getLaneFromX(touch.clientX);
+                if (dir) Game.handlePress(dir);
+            }
+        }, { passive: false });
+
+        canvas.addEventListener('touchend', (e) => {
+            e.preventDefault();
+            for (let i = 0; i < e.changedTouches.length; i++) {
+                let touch = e.changedTouches[i];
+                let dir = getLaneFromX(touch.clientX);
+                if (dir) Game.handleRelease(dir);
+            }
+        });
+
+        function getLaneFromX(x) {
+            // Determine lane based on X relative to START_X and LANE_WIDTH
+            if (x < START_X || x > START_X + LANE_WIDTH * 4) return null;
+            const index = Math.floor((x - START_X) / LANE_WIDTH);
+            const dirs = ['LEFT', 'UP', 'DOWN', 'RIGHT'];
+            return dirs[index];
+        }
+
         // --- Gestion du Leaderboard ---
         function saveScore(newScore) {
             let scores = JSON.parse(localStorage.getItem('aquaRythmeScores')) || [];
             scores.push(newScore);
-            scores.sort((a, b) => b - a); // Décroissant
-            scores = scores.slice(0, 5); // Top 5
+            scores.sort((a, b) => b - a);
+            scores = scores.slice(0, 5);
             localStorage.setItem('aquaRythmeScores', JSON.stringify(scores));
             updateLeaderboardDisplay(scores);
         }
@@ -442,16 +602,17 @@
         // --- Boucle de Jeu ---
 
         function update(dt) {
+            if (!Game.isPlaying) return;
+
             timeLeft -= dt;
             if (timeLeft <= 0) endGame();
 
-            // Timer de génération de flèches (basé sur le BPM)
             spawnTimer += dt;
+            // Slightly faster spawn logic
             const beatInterval = 60 / BPM;
             if (spawnTimer >= beatInterval) {
                 spawnTimer -= beatInterval;
-                // 70% de chance d'apparition sur un temps fort
-                if (Math.random() > 0.3) Game.spawnNote();
+                if (Math.random() > 0.4) Game.spawnNote();
             }
 
             // 1. Swimmer Logic
@@ -462,7 +623,7 @@
                 }
             });
 
-            // 2. Feedback Animation
+            // 2. Feedback
             if (feedback.opacity > 0) {
                 feedback.opacity -= dt * 1.5;
                 feedback.y -= dt * 30;
@@ -473,26 +634,64 @@
             // 3. Notes Logic
             for (let i = notes.length - 1; i >= 0; i--) {
                 let n = notes[i];
-                n.y += ARROW_SPEED * dt;
 
-                // AI Trigger Logic (Synchro parfaite)
+                // Si tenue, on ne bouge pas le Y de la tête, on réduit la longueur
+                if (n.isHeld) {
+                    // Consommer la longueur
+                    const consumeAmount = ARROW_SPEED * dt;
+                    n.length -= consumeAmount;
+
+                    // Score continu
+                    // n.scoreTimer += dt;
+                    // if (n.scoreTimer > 0.1) { ... score++ ... }
+                    score += Math.ceil(10 * dt * 60); // approx points per frame
+
+                    // Effet visuel continu
+                    if (Math.random() > 0.5) {
+                        createExplosion(centerXForDir(n.dir), TARGET_Y, n.color);
+                    }
+
+                    // Fin de la note longue
+                    if (n.length <= 0) {
+                        n.active = false;
+                        score += 100; // Bonus fin
+                        triggerFeedback("COOL", "#00E676");
+                    }
+
+                } else {
+                    // Mouvement normal
+                    n.y += ARROW_SPEED * dt;
+                }
+
+                // AI Trigger
                 if (!n.aiTriggered && n.y > TARGET_Y - 10) {
                     n.aiTriggered = true;
                     swimmers.forEach(s => {
                         if (!s.isPlayer) triggerSwimmerMove(s, n.dir);
                     });
-                    if (Math.random() > 0.5) createSplashEffect(swimmers[1]);
                 }
 
-                // Miss logic
-                if (n.active && n.y > TARGET_Y + GOOD_THRESHOLD + 20) {
+                // Miss Logic (Passé sans être touché ou relâché trop tôt ?)
+                // Si la TÊTE dépasse
+                if (n.active && !n.wasHit && n.y > TARGET_Y + GOOD_THRESHOLD) {
                     n.active = false;
                     combo = 0;
                     triggerFeedback("RATÉ", "#FF5252");
-                    updateHUD();
+                }
+                // Si tenue mais relâchée (géré dans input), le 'n.isHeld' passe à false
+                // Si la note continue de descendre après avoir été relâchée, la tête est déjà "au niveau cible" (car figé pendant hold)
+                // Donc il faut gérer le cas "wasHit mais n.length > 0 et !isHeld" -> Elle repart vers le bas
+                // Mais visuellement c'est bizarre si la tête repart.
+                // Simplification : Si on relâche une note longue, elle "disparaît" (fade out) ou continue de défiler en "gris" (miss).
+
+                if (n.wasHit && !n.isHeld && n.length > 0) {
+                    // Le joueur a relâché trop tôt.
+                    // On fait descendre le reste de la queue
+                    n.y += ARROW_SPEED * dt;
+                    if (n.y > canvas.height) n.active = false;
                 }
 
-                if (n.y > canvas.height) notes.splice(i, 1);
+                if (n.y - n.length > canvas.height) notes.splice(i, 1);
             }
 
             // 4. Particules
@@ -503,6 +702,20 @@
                 p.life -= dt * 2;
                 if (p.life <= 0) particles.splice(i, 1);
             }
+
+            updateHUD();
+        }
+
+        function endGame() {
+            Game.isPlaying = false;
+            cancelAnimationFrame(gameLoopId);
+            musicPlayer.pause();
+
+            saveScore(score);
+            document.getElementById('finalScore').innerText = score;
+
+            document.getElementById('hud').classList.add('hidden');
+            document.getElementById('end-screen').classList.remove('hidden');
         }
 
         function draw() {
@@ -516,18 +729,13 @@
                 ctx.lineWidth = 3;
                 ctx.beginPath();
                 let r = (time * 40 + i * 120) % 400;
-                ctx.arc(400, 300, r, 0, Math.PI * 2);
+                ctx.arc(CENTER_X, canvas.height * 0.5, r, 0, Math.PI * 2);
                 ctx.stroke();
             }
             ctx.globalAlpha = 1.0;
 
-            // Nageuses (ordre de profondeur)
-            // 3 (Arr G), 4 (Arr D), 1 (G), 2 (D), 0 (Joueur)
-            drawSwimmer(swimmers[3]);
-            drawSwimmer(swimmers[4]);
-            drawSwimmer(swimmers[1]);
-            drawSwimmer(swimmers[2]);
-            drawSwimmer(swimmers[0]);
+            // Nageuses
+            swimmers.forEach(s => drawSwimmer(s));
 
             // Particules
             particles.forEach(p => {
@@ -556,137 +764,45 @@
             ctx.fill();
 
             const skin = "#FFCCBC";
-            const suit = s.isPlayer ? "#E91E63" : "#00BCD4"; // Rose (Joueur), Bleu (IA)
+            const suit = s.isPlayer ? "#E91E63" : "#00BCD4";
             const cap = s.isPlayer ? "#F8BBD0" : "#B2EBF2";
 
             if (s.state === 'IDLE') {
                 let bob = Math.sin((performance.now() + s.x) / 300) * 3;
-
-                ctx.fillStyle = suit;
-                ctx.fillRect(-15, 0 + bob, 30, 20);
-
-                ctx.fillStyle = skin;
-                ctx.beginPath();
-                ctx.arc(0, -25 + bob, 15, 0, Math.PI * 2);
-                ctx.fill();
-
-                ctx.fillStyle = cap;
-                ctx.beginPath();
-                ctx.arc(0, -30 + bob, 14, Math.PI, 0);
-                ctx.fill();
-
-                ctx.strokeStyle = skin;
-                ctx.lineWidth = 8;
-                ctx.lineCap = "round";
-                ctx.beginPath();
-                ctx.moveTo(-20, 5 + bob);
-                ctx.lineTo(-40, 10 + bob);
-                ctx.moveTo(20, 5 + bob);
-                ctx.lineTo(40, 10 + bob);
-                ctx.stroke();
-
+                ctx.fillStyle = suit; ctx.fillRect(-15, 0 + bob, 30, 20);
+                ctx.fillStyle = skin; ctx.beginPath(); ctx.arc(0, -25 + bob, 15, 0, Math.PI * 2); ctx.fill();
+                ctx.fillStyle = cap; ctx.beginPath(); ctx.arc(0, -30 + bob, 14, Math.PI, 0); ctx.fill();
+                ctx.strokeStyle = skin; ctx.lineWidth = 8; ctx.lineCap = "round";
+                ctx.beginPath(); ctx.moveTo(-20, 5 + bob); ctx.lineTo(-40, 10 + bob); ctx.moveTo(20, 5 + bob); ctx.lineTo(40, 10 + bob); ctx.stroke();
             } else if (s.state === 'UP') {
-                // Jambe levée
-                ctx.fillStyle = suit;
-                ctx.fillRect(-15, 0, 30, 20);
-                ctx.fillStyle = skin;
-                ctx.beginPath();
-                ctx.arc(0, -25, 15, 0, Math.PI * 2);
-                ctx.fill();
-                ctx.fillStyle = cap;
-                ctx.beginPath();
-                ctx.arc(0, -30, 14, Math.PI, 0);
-                ctx.fill();
-
-                ctx.strokeStyle = skin;
-                ctx.lineWidth = 10;
-                ctx.beginPath();
-                ctx.moveTo(10, 10);
-                ctx.lineTo(10, -60);
-                ctx.lineTo(15, -70);
-                ctx.stroke();
-
-                ctx.beginPath();
-                ctx.moveTo(-10, 10);
-                ctx.lineTo(-15, 30);
-                ctx.stroke();
-
+                ctx.fillStyle = suit; ctx.fillRect(-15, 0, 30, 20);
+                ctx.fillStyle = skin; ctx.beginPath(); ctx.arc(0, -25, 15, 0, Math.PI * 2); ctx.fill();
+                ctx.fillStyle = cap; ctx.beginPath(); ctx.arc(0, -30, 14, Math.PI, 0); ctx.fill();
+                ctx.strokeStyle = skin; ctx.lineWidth = 10;
+                ctx.beginPath(); ctx.moveTo(10, 10); ctx.lineTo(10, -60); ctx.lineTo(15, -70); ctx.stroke();
+                ctx.beginPath(); ctx.moveTo(-10, 10); ctx.lineTo(-15, 30); ctx.stroke();
             } else if (s.state === 'DOWN') {
-                // Plongée
                 let bob = Math.sin(performance.now() / 100) * 2;
-                ctx.strokeStyle = skin;
-                ctx.lineWidth = 10;
-
-                ctx.beginPath();
-                ctx.moveTo(-5, 0 + bob);
-                ctx.lineTo(-5, -50 + bob);
-                ctx.moveTo(5, 0 + bob);
-                ctx.lineTo(5, -50 + bob);
-                ctx.stroke();
-
-                ctx.fillStyle = skin;
-                ctx.beginPath();
-                ctx.ellipse(0, -55 + bob, 10, 5, -Math.PI / 2, 0, Math.PI * 2);
-                ctx.fill();
-
+                ctx.strokeStyle = skin; ctx.lineWidth = 10;
+                ctx.beginPath(); ctx.moveTo(-5, 0 + bob); ctx.lineTo(-5, -50 + bob); ctx.moveTo(5, 0 + bob); ctx.lineTo(5, -50 + bob); ctx.stroke();
+                ctx.fillStyle = skin; ctx.beginPath(); ctx.ellipse(0, -55 + bob, 10, 5, -Math.PI / 2, 0, Math.PI * 2); ctx.fill();
             } else if (s.state === 'LEFT') {
-                // Tourne
                 let rot = (performance.now() / 2) % 360;
-                ctx.save();
-                ctx.rotate(rot * Math.PI / 180);
-                ctx.fillStyle = suit;
-                ctx.beginPath();
-                ctx.ellipse(0, 0, 15, 25, 0, 0, Math.PI * 2);
-                ctx.fill();
-                ctx.strokeStyle = skin;
-                ctx.lineWidth = 6;
-                ctx.beginPath();
-                ctx.moveTo(0, -10);
-                ctx.lineTo(30, -20);
-                ctx.moveTo(0, -10);
-                ctx.lineTo(-30, 20);
-                ctx.stroke();
-                ctx.fillStyle = cap;
-                ctx.beginPath();
-                ctx.arc(0, 0, 12, 0, Math.PI * 2);
-                ctx.fill();
+                ctx.save(); ctx.rotate(rot * Math.PI / 180);
+                ctx.fillStyle = suit; ctx.beginPath(); ctx.ellipse(0, 0, 15, 25, 0, 0, Math.PI * 2); ctx.fill();
+                ctx.strokeStyle = skin; ctx.lineWidth = 6; ctx.beginPath(); ctx.moveTo(0, -10); ctx.lineTo(30, -20); ctx.moveTo(0, -10); ctx.lineTo(-30, 20); ctx.stroke();
+                ctx.fillStyle = cap; ctx.beginPath(); ctx.arc(0, 0, 12, 0, Math.PI * 2); ctx.fill();
                 ctx.restore();
-
             } else if (s.state === 'RIGHT') {
-                // Vague
-                ctx.fillStyle = suit;
-                ctx.fillRect(-15, 0, 30, 20);
-                ctx.fillStyle = skin;
-                ctx.beginPath();
-                ctx.arc(0, -25, 15, 0, Math.PI * 2);
-                ctx.fill();
-                ctx.fillStyle = cap;
-                ctx.beginPath();
-                ctx.arc(0, -30, 14, Math.PI, 0);
-                ctx.fill();
-
+                ctx.fillStyle = suit; ctx.fillRect(-15, 0, 30, 20);
+                ctx.fillStyle = skin; ctx.beginPath(); ctx.arc(0, -25, 15, 0, Math.PI * 2); ctx.fill();
+                ctx.fillStyle = cap; ctx.beginPath(); ctx.arc(0, -30, 14, Math.PI, 0); ctx.fill();
                 let wave = Math.sin(performance.now() / 100) * 0.5;
-                ctx.strokeStyle = skin;
-                ctx.lineWidth = 8;
-                ctx.save();
-                ctx.translate(20, 0);
-                ctx.rotate(wave - 0.5);
-                ctx.beginPath();
-                ctx.moveTo(0, 0);
-                ctx.lineTo(0, -50);
-                ctx.stroke();
-                ctx.fillStyle = skin;
-                ctx.beginPath();
-                ctx.arc(0, -55, 5, 0, Math.PI * 2);
-                ctx.fill();
-                ctx.restore();
-
-                ctx.beginPath();
-                ctx.moveTo(-20, 0);
-                ctx.lineTo(-30, 20);
-                ctx.stroke();
+                ctx.strokeStyle = skin; ctx.lineWidth = 8; ctx.save(); ctx.translate(20, 0); ctx.rotate(wave - 0.5);
+                ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(0, -50); ctx.stroke();
+                ctx.fillStyle = skin; ctx.beginPath(); ctx.arc(0, -55, 5, 0, Math.PI * 2); ctx.fill(); ctx.restore();
+                ctx.beginPath(); ctx.moveTo(-20, 0); ctx.lineTo(-30, 20); ctx.stroke();
             }
-
             ctx.restore();
         }
 
@@ -697,77 +813,87 @@
                 let x = START_X + (i * LANE_WIDTH) + LANE_WIDTH / 2;
 
                 // Zone cible
-                ctx.strokeStyle = "rgba(255,255,255,0.6)";
+                ctx.strokeStyle = keysState[getDirFromIndex(i)] ? "white" : "rgba(255,255,255,0.6)";
                 ctx.lineWidth = 4;
                 ctx.beginPath();
-                ctx.arc(x, TARGET_Y, 28, 0, Math.PI * 2);
+                ctx.arc(x, TARGET_Y, LANE_WIDTH / 3, 0, Math.PI * 2);
                 ctx.stroke();
 
-                // Fond tactile
-                ctx.fillStyle = "rgba(0,0,0,0.2)";
-                ctx.beginPath();
-                ctx.arc(x, TARGET_Y, 26, 0, Math.PI * 2);
-                ctx.fill();
+                if (keysState[getDirFromIndex(i)]) {
+                    ctx.fillStyle = "rgba(255,255,255,0.4)";
+                    ctx.fill();
+                } else {
+                    ctx.fillStyle = "rgba(0,0,0,0.2)";
+                    ctx.fill();
+                }
 
-                // Icône
                 ctx.fillStyle = "rgba(255,255,255,0.8)";
-                ctx.font = "30px Arial";
+                ctx.font = Math.round(LANE_WIDTH / 3) + "px Arial";
                 ctx.textAlign = "center";
                 ctx.textBaseline = "middle";
                 ctx.fillText(targets[i], x, TARGET_Y);
             }
 
-            // Notes actives
             notes.forEach(n => {
-                if (!n.active) return;
+                if (!n.active || (n.wasHit && !n.isHeld && n.length <= 0)) return;
 
-                let colIndex = 0;
-                let symbol = '';
-                if (n.dir === 'LEFT') { colIndex = 0; symbol = '←'; }
-                if (n.dir === 'UP') { colIndex = 1; symbol = '↑'; }
-                if (n.dir === 'DOWN') { colIndex = 2; symbol = '↓'; }
-                if (n.dir === 'RIGHT') { colIndex = 3; symbol = '→'; }
-
+                let colIndex = getIndexFromDir(n.dir);
                 let x = START_X + (colIndex * LANE_WIDTH) + LANE_WIDTH / 2;
+                let symbol = getSymbolFromDir(n.dir);
 
-                ctx.fillStyle = n.color;
+                // Dessiner la queue (Long notes)
+                if (n.length > 0) {
+                    ctx.fillStyle = n.color;
+                    ctx.globalAlpha = 0.6;
+                    // La queue remonte vers le haut depuis Y
+                    ctx.fillRect(x - 10, n.y - n.length, 20, n.length);
+                    ctx.globalAlpha = 1.0;
+                }
+
+                // Dessiner la tête (si pas encore passée ou en cours de hold)
+                // Si isHeld, la tête reste bloquée visuellement à TARGET_Y
+                let drawY = n.isHeld ? TARGET_Y : n.y;
+
+                // Si on a raté la note (wasHit && !isHeld) mais qu'il reste de la longueur, la tête continue
+
+                if (n.wasHit && !n.isHeld && n.length > 0) {
+                    ctx.fillStyle = "#999"; // Grisé
+                } else {
+                    ctx.fillStyle = n.color;
+                }
+
                 ctx.beginPath();
-                ctx.arc(x, n.y, 23, 0, Math.PI * 2);
+                ctx.arc(x, drawY, LANE_WIDTH / 3 - 4, 0, Math.PI * 2);
                 ctx.fill();
 
                 ctx.fillStyle = "white";
-                ctx.font = "bold 28px Arial";
-                ctx.fillText(symbol, x, n.y + 2);
+                ctx.font = "bold " + Math.round(LANE_WIDTH / 3) + "px Arial";
+                ctx.fillText(symbol, x, drawY + 2);
             });
         }
 
-        function drawFeedbackText() {
-            if (feedback.opacity <= 0) return;
-
-            ctx.save();
-            ctx.globalAlpha = feedback.opacity;
-            ctx.translate(CENTER_X, feedback.y);
-            ctx.scale(feedback.scale, feedback.scale);
-
-            ctx.font = "900 40px 'Segoe UI', Arial";
-            ctx.textAlign = "center";
-
-            // Contour
-            ctx.lineWidth = 4;
-            ctx.strokeStyle = "black";
-            ctx.strokeText(feedback.text, 0, 0);
-
-            // Remplissage
-            ctx.fillStyle = feedback.color;
-            ctx.fillText(feedback.text, 0, 0);
-
-            ctx.restore();
+        function getDirFromIndex(i) {
+            const dirs = ['LEFT', 'UP', 'DOWN', 'RIGHT'];
+            return dirs[i];
         }
-
-        // --- Contrôles ---
+        function getIndexFromDir(dir) {
+            if (dir === 'LEFT') return 0;
+            if (dir === 'UP') return 1;
+            if (dir === 'DOWN') return 2;
+            if (dir === 'RIGHT') return 3;
+            return 0;
+        }
+        function getSymbolFromDir(dir) {
+            if (dir === 'LEFT') return '←';
+            if (dir === 'UP') return '↑';
+            if (dir === 'DOWN') return '↓';
+            if (dir === 'RIGHT') return '→';
+            return '?';
+        }
 
         function updateHUD() {
             document.getElementById('scoreVal').innerText = score;
+            document.getElementById('timeVal').innerText = Math.ceil(timeLeft);
             document.getElementById('comboVal').innerText = combo;
             const comboEl = document.getElementById('comboDisplay');
             if (combo > 1) comboEl.classList.add('combo-active');
@@ -782,7 +908,7 @@
             particles = [];
             spawnTimer = 0;
             initSwimmers();
-            updateLeaderboardDisplay(); // Charger les scores existants
+            updateLeaderboardDisplay();
 
             document.getElementById('start-screen').classList.add('hidden');
             document.getElementById('end-screen').classList.add('hidden');
@@ -790,79 +916,22 @@
 
             updateHUD();
 
-            // Lancer la musique
             musicPlayer.currentTime = 0;
-            musicPlayer.play().catch(e => console.log("Lecture audio bloquée par le navigateur, interaction requise.", e));
+            musicPlayer.play().catch(e => console.log("Audio bloqué", e));
 
             Game.isPlaying = true;
             lastTime = performance.now();
             requestAnimationFrame(gameLoop);
         }
 
-        function endGame() {
-            Game.isPlaying = false;
-            musicPlayer.pause();
-
-            document.getElementById('hud').classList.add('hidden');
-            document.getElementById('comboDisplay').classList.remove('combo-active');
-            document.getElementById('end-screen').classList.remove('hidden');
-            document.getElementById('finalScore').innerText = score;
-
-            let rank = "Pas mal !";
-            if (score > 1000) rank = "Magnifique !";
-            if (score > 3000) rank = "Or Olympique !";
-            if (score > 4500) rank = "Légendaire !";
-            document.getElementById('rankText').innerText = rank;
-
-            saveScore(score);
-        }
-
         function gameLoop(time) {
             if (!Game.isPlaying) return;
-            let dt = (time - lastTime) / 1000;
+            const dt = (time - lastTime) / 1000;
             lastTime = time;
             update(dt);
             draw();
-            document.getElementById('timeVal').innerText = Math.ceil(timeLeft);
-            requestAnimationFrame(gameLoop);
+            gameLoopId = requestAnimationFrame(gameLoop);
         }
-
-        // Interactions
-        window.addEventListener('keydown', (e) => {
-            // Prevent page scrolling for arrow keys
-            if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Space'].includes(e.code)) {
-                e.preventDefault();
-            }
-
-            if (!Game.isPlaying) return;
-            if (e.key === 'ArrowLeft') Game.handleInput('LEFT');
-            if (e.key === 'ArrowUp') Game.handleInput('UP');
-            if (e.key === 'ArrowDown') Game.handleInput('DOWN');
-            if (e.key === 'ArrowRight') Game.handleInput('RIGHT');
-        });
-
-        canvas.addEventListener('pointerdown', (e) => {
-            if (!Game.isPlaying) return;
-            const rect = canvas.getBoundingClientRect();
-            const scaleX = canvas.width / rect.width;
-            const scaleY = canvas.height / rect.height;
-            const x = (e.clientX - rect.left) * scaleX;
-            const y = (e.clientY - rect.top) * scaleY;
-
-            if (y > TARGET_Y - 50 && y < TARGET_Y + 50) {
-                const relativeX = x - START_X;
-                if (relativeX > 0 && relativeX < LANE_WIDTH * 4) {
-                    const laneIdx = Math.floor(relativeX / LANE_WIDTH);
-                    const dirs = ['LEFT', 'UP', 'DOWN', 'RIGHT'];
-                    Game.handleInput(dirs[laneIdx]);
-                }
-            }
-        });
-
-        // Initial render
-        initSwimmers();
-        draw();
-        updateLeaderboardDisplay();
 
     </script>
 </body>

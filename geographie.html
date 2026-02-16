@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Épreuve de Géographie</title>
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="style-jeu.css">
+    <link rel="stylesheet" href="style-quiz.css">
+    <link rel="stylesheet" href="style-geo.css">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Nunito:wght@400;700&display=swap"
+        rel="stylesheet">
+
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+
+    <style>
+        /* Surcharge spécifique pour s'assurer que la carte s'affiche bien */
+        #map {
+            min-height: 400px;
+        }
+    </style>
+</head>
+
+<body>
+    <img src="images/top_left.png" alt="" class="corner top-left">
+    <img src="images/top_right.png" alt="" class="corner top-right">
+    <img src="images/bottom_left.png" alt="" class="corner bottom-left">
+    <img src="images/bottom_right.png" alt="" class="corner bottom-right">
+
+    <div class="game-container">
+        <nav class="page-nav">
+            <a href="index.html" class="nav-link">← Retour à l'accueil</a>
+            <a href="jeu.html" class="nav-link">Retour aux épreuves ↑</a>
+        </nav>
+
+        <header>
+            <h1>Épreuve de Géographie</h1>
+            <p class="instruction">Retrouvez sur la carte le lieu de la photo !</p>
+        </header>
+
+        <main class="geo-container">
+            <div class="info-bar" style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                <span id="question-count" style="font-weight: bold; color: #796c66;">Question 1 / 10</span>
+                <span id="score-display" class="score-display">Score Total: 0</span>
+            </div>
+
+            <div class="question-container">
+                <div class="image-container">
+                    <!-- Placeholder initial -->
+                    <img id="question-image" src="" alt="Photo mystère" class="question-image"
+                        onerror="this.src='https://placehold.co/600x400?text=Photo+Manquante'">
+                </div>
+
+                <p id="question-text" class="question-text">Chargement de la question...</p>
+
+                <div id="map"></div>
+
+                <div class="controls">
+                    <div id="feedback-text" class="result-feedback"></div>
+                    <div>
+                        <button id="validate-btn" onclick="validateAnswer()" disabled>Valider</button>
+                        <button id="next-btn" onclick="nextQuestion()">Question Suivante →</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
+    <!-- Configuration -->
+    <script src="questions_geo.js"></script>
+
+    <!-- Game Logic -->
+    <script src="js/geographie.js"></script>
+</body>
+
+</html>

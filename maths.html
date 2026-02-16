@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Épreuve de Maths</title>
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="style-jeu.css">
+    <link rel="stylesheet" href="style-quiz.css">
+    <link rel="stylesheet" href="style-maths.css">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Nunito:wght@400;700&display=swap"
+        rel="stylesheet">
+    <!-- Font for Chalkboard if needed, using system fonts fallback -->
+</head>
+
+<body>
+    <img src="images/top_left.png" alt="" class="corner top-left">
+    <img src="images/top_right.png" alt="" class="corner top-right">
+    <img src="images/bottom_left.png" alt="" class="corner bottom-left">
+    <img src="images/bottom_right.png" alt="" class="corner bottom-right">
+
+    <div class="game-container">
+        <nav class="page-nav">
+            <a href="index.html" class="nav-link">← Retour à l'accueil</a>
+            <a href="jeu.html" class="nav-link">Retour aux épreuves ↑</a>
+        </nav>
+
+        <header>
+            <h1>Épreuve de Maths</h1>
+            <p class="instruction">Résolvez ces problèmes farfelus ! (Réponses numériques uniquement)</p>
+        </header>
+
+        <main class="math-container">
+            <div class="info-bar" style="display: flex; justify-content: space-between; margin-bottom: 20px;">
+                <span id="question-count" style="font-weight: bold; color: #796c66;">Problème 1 / 5</span>
+                <span id="score-display" class="score-display">Score Total: 0 / 20</span>
+            </div>
+
+            <div class="blackboard-frame">
+                <div class="blackboard">
+                    <p id="question-text" class="chalk-text">Chargement du problème...</p>
+                    <div class="chalk-dust">maths are cool</div>
+                </div>
+            </div>
+
+            <div class="math-input-container">
+                <input type="number" id="math-answer" placeholder="Votre réponse" step="any">
+                <button id="submit-button" onclick="checkAnswer()">Valider</button>
+                <button id="next-button" onclick="nextQuestion()"
+                    style="display: none; background-color: #2196F3; color: white; border: none; padding: 12px 25px; border-radius: 50px; font-weight: bold; font-size: 1.1rem; cursor: pointer;">Suivant
+                    →</button>
+            </div>
+
+            <div id="feedback-text"
+                style="text-align: center; margin-top: 20px; font-size: 1.3rem; font-weight: bold; min-height: 30px;">
+            </div>
+
+        </main>
+    </div>
+
+    <!-- Configuration -->
+    <script src="questions_maths.js"></script>
+
+    <!-- Game Logic -->
+    <script src="js/maths.js"></script>
+</body>
+
+</html>

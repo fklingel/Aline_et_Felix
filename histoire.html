@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Épreuve d'Histoire</title>
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="style-jeu.css">
+    <link rel="stylesheet" href="style-quiz.css">
+    <link rel="stylesheet" href="style-histoire.css">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Nunito:wght@400;700&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <img src="images/top_left.png" alt="" class="corner top-left">
+    <img src="images/top_right.png" alt="" class="corner top-right">
+    <img src="images/bottom_left.png" alt="" class="corner bottom-left">
+    <img src="images/bottom_right.png" alt="" class="corner bottom-right">
+
+    <div class="game-container">
+        <nav class="page-nav">
+            <a href="index.html" class="nav-link">← Retour à l'accueil</a>
+            <a href="jeu.html" class="nav-link">Retour aux épreuves ↑</a>
+        </nav>
+
+        <header>
+            <h1>Épreuve d'Histoire</h1>
+            <p class="instruction">Reconstituez la frise chronologique ! Cliquez sur le "+" pour insérer la carte.</p>
+        </header>
+
+        <main class="history-container">
+            <div class="info-bar" style="display: flex; justify-content: flex-end; margin-bottom: 10px;">
+                <!-- Score hidden until end -->
+            </div>
+
+            <!-- La carte actuelle à placer -->
+            <div class="current-card-area">
+                <h3>Carte à placer</h3>
+                <div id="current-card-container">
+                    <!-- Injection JS -->
+                </div>
+            </div>
+
+            <div style="margin: 20px 0; text-align: center; color: #aaa;">↓ Frise Chronologique ↓</div>
+
+            <!-- La Frise Chronologique -->
+            <div id="timeline-container" class="timeline-area">
+                <!-- Les cartes et boutons d'insertion seront générés ici -->
+            </div>
+
+            <!-- Bouton Valider (Caché au début) -->
+            <div id="validate-container" class="validate-container" style="display:none;">
+                <button id="validate-timeline-btn" onclick="validateTimeline()">Valider la Frise</button>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- Overlay Feedback -->
+    <div id="feedback-overlay" class="feedback-overlay" style="display:none;">
+        <div class="feedback-content">
+            <!-- Rempli par JS -->
+        </div>
+    </div>
+
+    <!-- Configuration -->
+    <script src="questions_histoire.js"></script>
+
+    <!-- Game Logic -->
+    <script src="js/histoire.js"></script>
+</body>
+
+</html>

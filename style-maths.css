@@ -1,0 +1,82 @@
+/* style-maths.css */
+
+.math-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.blackboard-frame {
+    background-color: #5a3a29;
+    /* Cadre en bois */
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+    margin-bottom: 30px;
+}
+
+.blackboard {
+    background-color: #333;
+    background-image: url('https://www.transparenttextures.com/patterns/black-felt.png');
+    /* Texture subtile */
+    color: white;
+    padding: 40px;
+    border-radius: 5px;
+    border: 2px solid #444;
+    font-family: 'Comic Sans MS', 'Chalkboard SE', 'Marker Felt', 'Nunito', sans-serif;
+    /* Police manuscrite */
+    min-height: 200px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.5);
+}
+
+/* Effet de craie */
+.chalk-text {
+    font-size: 1.5rem;
+    line-height: 1.6;
+    text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.3);
+}
+
+.math-input-container {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 30px;
+    flex-wrap: wrap;
+}
+
+#math-answer {
+    font-size: 1.5rem;
+    padding: 10px 20px;
+    border: 3px solid #5a4e49;
+    border-radius: 10px;
+    width: 200px;
+    text-align: center;
+    font-family: 'Nunito', sans-serif;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+#math-answer:focus {
+    border-color: #FF9800;
+}
+
+/* Enlever les flèches du champ nombre */
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.chalk-dust {
+    position: absolute;
+    bottom: 10px;
+    right: 20px;
+    color: rgba(255, 255, 255, 0.2);
+    font-size: 0.8rem;
+    font-style: italic;
+}

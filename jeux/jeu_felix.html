@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Alpin Extrême : Air Time</title>
     <style>
         body {
@@ -11,24 +11,17 @@
             padding: 0;
             background-color: #87CEEB;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
             overflow: hidden;
             user-select: none;
+            touch-action: none;
+            /* Crucial for mobile game */
         }
 
-        #gameContainer {
-            position: relative;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
-            border-radius: 8px;
-            overflow: hidden;
-            border: 4px solid #fff;
-        }
-
+        /* Canvas fills the screen */
         canvas {
             display: block;
+            width: 100vw;
+            height: 100vh;
             background: linear-gradient(to bottom, #1976D2 0%, #87CEEB 60%, #E0F7FA 100%);
         }
 
@@ -41,6 +34,7 @@
             color: #fff;
             text-shadow: 2px 2px 0 #000;
             text-align: right;
+            pointer-events: none;
         }
 
         #trick-text {
@@ -75,7 +69,9 @@
             padding: 30px;
             border-radius: 15px;
             box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
-            min-width: 350px;
+            min-width: 300px;
+            /* Reduced for mobile */
+            max-width: 90%;
             z-index: 20;
         }
 
@@ -96,14 +92,16 @@
             background-color: #d32f2f;
             color: white;
             border: none;
-            padding: 12px 30px;
-            font-size: 18px;
+            padding: 15px 40px;
+            /* Larger touch target */
+            font-size: 20px;
             font-weight: bold;
             border-radius: 30px;
             cursor: pointer;
             margin-top: 15px;
             transition: transform 0.1s;
             box-shadow: 0 4px 0 #b71c1c;
+            touch-action: manipulation;
         }
 
         button:hover {
@@ -120,7 +118,7 @@
             display: none !important;
         }
 
-        /* Styles du Leaderboard */
+        /* Leaderboard */
         #leaderboard {
             margin-top: 20px;
             background: #f1f8e9;
@@ -160,41 +158,40 @@
 
 <body>
 
-    <div id="gameContainer">
-        <canvas id="gameCanvas" width="900" height="500"></canvas>
-        <div id="ui-layer">
-            Score : <span id="scoreVal">0</span><br>
-            <span style="font-size: 16px; color: #eee;">Vitesse : <span id="speedVal">1.0</span>x</span>
+    <canvas id="gameCanvas"></canvas>
+
+    <div id="ui-layer">
+        Score : <span id="scoreVal">0</span><br>
+        <span style="font-size: 16px; color: #eee;">Vitesse : <span id="speedVal">1.0</span>x</span>
+    </div>
+
+    <div id="trick-text">PARFAIT ! +500</div>
+
+    <div id="start-screen">
+        <h1>Alpin Extrême</h1>
+        <p><strong>ESPACE</strong> ou <strong>TOUCHER</strong> pour Sauter</p>
+        <p><strong>BAS</strong> pour se Baisser (Clavier)</p>
+        <hr style="border:0; border-top:1px solid #ccc; margin: 15px 0;">
+        <p style="font-size: 15px; color: #333; line-height: 1.5;">
+            Les <span style="color:#0277BD; font-weight:bold;">Rampes Bleues</span> vous lancent auto.<br>
+            Appuyez en l'air pour un Backflip !
+        </p>
+        <button onclick="startGame()">Commencer</button>
+    </div>
+
+    <div id="game-over-screen" class="hidden">
+        <h1>CHUTE !</h1>
+        <p>Secours en approche.</p>
+        <p>Score Final : <strong id="finalScore" style="color:#d32f2f; font-size: 24px;">0</strong></p>
+
+        <div id="leaderboard">
+            <h3>Meilleurs Scores</h3>
+            <ul id="highscoresList">
+                <!-- Scores injected via JS -->
+            </ul>
         </div>
 
-        <div id="trick-text">PARFAIT ! +500</div>
-
-        <div id="start-screen">
-            <h1>Alpin Extrême</h1>
-            <p><strong>ESPACE</strong> pour Sauter</p>
-            <p><strong>BAS</strong> pour se Baisser</p>
-            <hr style="border:0; border-top:1px solid #ccc; margin: 15px 0;">
-            <p style="font-size: 15px; color: #333; line-height: 1.5;">
-                Les <span style="color:#0277BD; font-weight:bold;">Rampes Bleues</span> vous lancent auto.<br>
-                Appuyez sur <strong>ESPACE</strong> en l'air pour un Backflip !
-            </p>
-            <button onclick="startGame()">Commencer</button>
-        </div>
-
-        <div id="game-over-screen" class="hidden">
-            <h1>CHUTE !</h1>
-            <p>Secours en approche.</p>
-            <p>Score Final : <strong id="finalScore" style="color:#d32f2f; font-size: 24px;">0</strong></p>
-
-            <div id="leaderboard">
-                <h3>Meilleurs Scores</h3>
-                <ul id="highscoresList">
-                    <!-- Scores injected via JS -->
-                </ul>
-            </div>
-
-            <button onclick="resetGame()">Rejouer</button>
-        </div>
+        <button onclick="resetGame()">Rejouer</button>
     </div>
 
     <script>
@@ -218,12 +215,20 @@
         const START_SPEED = 6;
         const MAX_SPEED = 14;
 
+        // --- Zoom Configuration (Dynamic) ---
+        let ZOOM = 1;
+        let CAMERA_Y_OFFSET = 0;
+
         // --- État du Jeu ---
         let gameSpeed = START_SPEED;
         let score = 0;
         let frameCount = 0;
         let gameState = 'START';
         let gameLoopId;
+
+        // Virtual Width/Height based on Zoom
+        let vWidth = 0;
+        let vHeight = 0;
 
         let keys = { space: false, down: false };
 
@@ -251,24 +256,53 @@
             x: -200, y: 50, ropeLength: 0, state: 'IDLE', rotorAngle: 0
         };
 
-        // --- Entrées (Inputs) ---
-        document.addEventListener('keydown', (e) => {
-            // Prevent page scrolling for arrow keys and space
-            if (['Space', 'ArrowUp', 'ArrowDown'].includes(e.code)) {
-                e.preventDefault();
+        // --- Resize Handler & Performance ---
+        function resize() {
+            // Cap pixel ratio for performance (max 1.5 is usually enough for games)
+            const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+
+            canvas.width = window.innerWidth * dpr;
+            canvas.height = window.innerHeight * dpr;
+
+            // Fix CSS size to match window
+            canvas.style.width = window.innerWidth + 'px';
+            canvas.style.height = window.innerHeight + 'px';
+
+            // Normalize context scale for DPI
+            ctx.resetTransform();
+            ctx.scale(dpr, dpr);
+
+            // Responsive Logic
+            if (window.innerWidth < 800) {
+                // Mobile
+                ZOOM = 0.45;
+                CAMERA_Y_OFFSET = 100; // Less extreme offset
+            } else {
+                // Desktop
+                ZOOM = 1.0;
+                CAMERA_Y_OFFSET = 0;
             }
 
+            // Virtual dimensions logic remains based on logical pixels (window.innerWidth/Height)
+            // adjusted by ZOOM.
+            vWidth = window.innerWidth / ZOOM;
+            vHeight = window.innerHeight / ZOOM;
+
+            if (gameState === 'START' || gameState === 'OVER') {
+                draw();
+            }
+        }
+        window.addEventListener('resize', resize);
+        resize(); // Init size
+
+        // --- Inputs ---
+        document.addEventListener('keydown', (e) => {
+            if (['Space', 'ArrowUp', 'ArrowDown'].includes(e.code)) e.preventDefault();
             if (gameState !== 'PLAYING') return;
 
             if (e.code === 'Space' || e.code === 'ArrowUp') {
-                keys.space = true;
-
-                // Trigger Backflip
-                if (!player.isGrounded && player.canTrick && !player.isFlipping) {
-                    performBackflip();
-                }
+                handleJump();
             }
-
             if (e.code === 'ArrowDown') keys.down = true;
         });
 
@@ -277,13 +311,37 @@
             if (e.code === 'ArrowDown') keys.down = false;
         });
 
+        // --- Touch Inputs ---
+        document.addEventListener('touchstart', (e) => {
+            // Prevent default behavior (scroll/zoom)
+            // But allow button clicks if target is button
+            if (e.target.tagName !== 'BUTTON') {
+                e.preventDefault();
+            }
+
+            if (gameState === 'PLAYING') {
+                handleJump();
+            }
+        }, { passive: false });
+
+        document.addEventListener('touchend', (e) => {
+            keys.space = false;
+        });
+
+        function handleJump() {
+            keys.space = true;
+            if (!player.isGrounded && player.canTrick && !player.isFlipping) {
+                performBackflip();
+            }
+        }
+
         // --- Logique ---
 
         function init() {
             clouds = [];
-            for (let i = 0; i < 8; i++) {
+            for (let i = 0; i < 15; i++) { // More clouds for wider screen
                 clouds.push({
-                    x: Math.random() * canvas.width,
+                    x: Math.random() * vWidth,
                     y: Math.random() * 200,
                     scale: 0.5 + Math.random() * 0.8,
                     speed: 0.2 + Math.random() * 0.5
@@ -317,7 +375,7 @@
             scoreEl.innerText = '0';
             speedEl.innerText = '1.0';
 
-            helicopter.x = canvas.width + 200;
+            helicopter.x = vWidth + 200;
             helicopter.y = -100;
             helicopter.state = 'IDLE';
             helicopter.ropeLength = 0;
@@ -333,14 +391,13 @@
             const rand = Math.random();
             let type = 'TREE';
 
-            // Probabilités
             if (rand > 0.85) type = 'RAMP';
             else if (rand > 0.75) type = 'CREVASSE';
             else if (rand > 0.60) type = 'KID';
             else if (rand > 0.40) type = 'BIRD';
 
             let obs = {
-                x: canvas.width + 100,
+                x: vWidth + 100, // Spawn off-screen right (virtual coords)
                 y: 0,
                 width: 0,
                 height: 0,
@@ -364,7 +421,7 @@
             } else if (type === 'KID') {
                 obs.width = 30; obs.height = 45;
                 obs.y = GROUND_BASE_Y - obs.height + 2;
-                obs.speedFactor = 0.65; // Enfant plus lent
+                obs.speedFactor = 0.65;
             }
 
             obstacles.push(obs);
@@ -382,12 +439,11 @@
             setTimeout(() => trickText.classList.remove('show-trick'), 1000);
         }
 
-        // --- Gestion du Leaderboard (Local Storage) ---
         function saveScore(newScore) {
             let scores = JSON.parse(localStorage.getItem('alpinHighScores')) || [];
             scores.push(newScore);
-            scores.sort((a, b) => b - a); // Tri décroissant
-            scores = scores.slice(0, 5); // Garder le top 5
+            scores.sort((a, b) => b - a);
+            scores = scores.slice(0, 5);
             localStorage.setItem('alpinHighScores', JSON.stringify(scores));
             updateLeaderboardDisplay(scores);
         }
@@ -404,10 +460,9 @@
         }
 
         function update() {
-            // Nuages
             clouds.forEach(c => {
                 c.x -= c.speed;
-                if (c.x < -150) c.x = canvas.width + 50;
+                if (c.x < -150) c.x = vWidth + 50;
             });
 
             if (gameState === 'PLAYING') {
@@ -415,13 +470,11 @@
                 score += Math.floor(gameSpeed / 4);
                 scoreEl.innerText = score;
 
-                // Progression lente
                 if (frameCount % 600 === 0 && gameSpeed < MAX_SPEED) {
                     gameSpeed += 0.2;
                     speedEl.innerText = (gameSpeed / START_SPEED).toFixed(1);
                 }
 
-                // --- Physique Joueur ---
                 if (keys.space && player.isGrounded) {
                     player.dy = JUMP_FORCE;
                     player.isGrounded = false;
@@ -438,7 +491,6 @@
                 player.dy += GRAVITY;
                 player.y += player.dy;
 
-                // Sol
                 let currentGroundY = GROUND_BASE_Y;
                 if (player.y > currentGroundY - player.height) {
                     player.y = currentGroundY - player.height;
@@ -449,26 +501,23 @@
                     player.canTrick = false;
                 }
 
-                // Rotation
                 if (player.isFlipping) {
                     player.rotation -= 0.3;
                     if (player.rotation < -Math.PI * 2) player.rotation = 0;
                 } else if (player.canTrick) {
-                    player.rotation = -0.3; // Tilt arrière "prêt à sauter"
+                    player.rotation = -0.3;
                 } else {
                     player.rotation = player.isGrounded ? 0.1 : -0.1;
                 }
 
-                // --- Apparition Obstacles (Espacement Augmenté) ---
                 let lastX = obstacles.length > 0 ? obstacles[obstacles.length - 1].x : 0;
-                let gap = canvas.width - lastX;
+                let gap = vWidth - lastX;
 
-                // Gap minimum augmenté à 550px pour plus de lisibilité
+                // Spawning check using vWidth
                 if (gap > 550) {
                     if (Math.random() < 0.04) spawnObstacle();
                 }
 
-                // --- Logique Obstacles ---
                 for (let i = obstacles.length - 1; i >= 0; i--) {
                     let obs = obstacles[i];
                     obs.x -= gameSpeed * obs.speedFactor;
@@ -478,7 +527,6 @@
                     let pY = player.y + 5;
                     let pH = player.height - 10;
 
-                    // Rampe
                     if (obs.type === 'RAMP') {
                         if (pX + pW > obs.x && pX < obs.x + obs.width && pY + pH > obs.y + 10) {
                             if (!obs.hit) {
@@ -486,11 +534,10 @@
                                 player.dy = RAMP_FORCE;
                                 player.isGrounded = false;
                                 player.y = obs.y - player.height - 5;
-                                player.canTrick = true; // Active fenêtre de trick
+                                player.canTrick = true;
                             }
                         }
                     }
-                    // Dangers
                     else {
                         let collision = false;
                         if (obs.type === 'CREVASSE') {
@@ -520,7 +567,7 @@
             player.rotation = 110 * (Math.PI / 180);
             player.y = GROUND_BASE_Y - 20;
             helicopter.state = 'INCOMING';
-            helicopter.x = canvas.width + 200;
+            helicopter.x = vWidth + 200;
             helicopter.y = -100;
         }
 
@@ -548,28 +595,31 @@
                 if (helicopter.x < -150) {
                     gameState = 'OVER';
                     finalScoreEl.innerText = score;
-                    saveScore(score); // Sauvegarde Score
+                    saveScore(score);
                     gameOverScreen.classList.remove('hidden');
                 }
             }
         }
 
-        // --- Dessin ---
-
         function draw() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // --- Apply Zoom ---
+            ctx.save();
+            ctx.scale(ZOOM, ZOOM);
+
             drawClouds();
 
-            ctx.save();
-            ctx.translate(0, canvas.height / 2);
+            // Center of screen (Pivot for rotation) + Vertical Offset to lower the view
+            ctx.translate(0, (vHeight / 2) + CAMERA_Y_OFFSET);
             ctx.rotate(SLOPE_ANGLE);
-            ctx.translate(0, -canvas.height / 2);
+            ctx.translate(0, -(vHeight / 2)); // Rotate around center, but keep offset translation
 
             // Neige
             ctx.fillStyle = "#fff";
-            ctx.fillRect(-500, GROUND_BASE_Y, canvas.width + 1000, 1000);
+            ctx.fillRect(-500, GROUND_BASE_Y, vWidth + 1000, 2000); // 2000 height to cover bottom
             ctx.strokeStyle = "#B3E5FC"; ctx.lineWidth = 5;
-            ctx.beginPath(); ctx.moveTo(-500, GROUND_BASE_Y); ctx.lineTo(canvas.width + 1000, GROUND_BASE_Y); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(-500, GROUND_BASE_Y); ctx.lineTo(vWidth + 1000, GROUND_BASE_Y); ctx.stroke();
 
             obstacles.forEach(obs => {
                 if (obs.type === 'CREVASSE') drawCrevasse(obs.x, obs.y, obs.width);
@@ -577,11 +627,10 @@
 
             if (gameState !== 'OVER') drawSkier();
 
-            // Indice visuel pour le trick
             if (player.canTrick && !player.isFlipping && gameState === 'PLAYING') {
                 ctx.fillStyle = "rgba(0,0,0,0.6)";
                 ctx.font = "bold 16px Arial";
-                ctx.fillText("ESPACE !", player.x - 15, player.y - 20);
+                ctx.fillText("JUMP !", player.x - 15, player.y - 20);
             }
 
             obstacles.forEach(obs => {
@@ -593,9 +642,11 @@
 
             if (gameState === 'CRASHED' || gameState === 'RESCUING') drawHelicopter();
 
-            ctx.restore();
+            ctx.restore(); // Undo Slope Rotation relative transform
+            ctx.restore(); // Undo Zoom
         }
 
+        // Draw Helper Functions (Unchanged mostly)
         function drawClouds() {
             ctx.fillStyle = "rgba(255, 255, 255, 0.7)";
             clouds.forEach(c => {
@@ -702,7 +753,9 @@
             gameLoopId = requestAnimationFrame(loop);
         }
 
+        resize(); // Force logic update
         init();
+        resize(); // Final logic update before draw
         draw();
     </script>
 </body>

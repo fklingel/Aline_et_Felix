@@ -1,0 +1,240 @@
+/* style-histoire.css (Updated for Mobile & Touch) */
+
+.history-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    /* Prevent default touch actions like scroll when dragging */
+    touch-action: pan-y;
+}
+
+/* Zone de la frise */
+.timeline-area {
+    background-color: #f5f5f5;
+    border-radius: 15px;
+    padding: 20px;
+    min-height: 280px;
+    display: flex;
+    align-items: center;
+    overflow-x: auto;
+    gap: 15px;
+    margin-bottom: 30px;
+    box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.1);
+    white-space: nowrap;
+    border: 3px dashed #bbb;
+    transition: background-color 0.3s, border-color 0.3s;
+    position: relative;
+    /* For scroll calculation */
+}
+
+.timeline-area.drag-over {
+    background-color: #e3f2fd;
+    border-color: #2196F3;
+}
+
+.empty-message {
+    width: 100%;
+    text-align: center;
+    color: #999;
+    font-size: 1.5rem;
+    font-style: italic;
+    pointer-events: none;
+}
+
+/* Carte placée dans la frise */
+.timeline-card {
+    background: white;
+    border-radius: 10px;
+    padding: 10px;
+    width: 200px;
+    min-width: 200px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    position: relative;
+    display: inline-block;
+    vertical-align: top;
+    white-space: normal;
+    cursor: grab;
+    transition: transform 0.2s, box-shadow 0.2s;
+    user-select: none;
+    touch-action: none;
+    /* Important for custom drag */
+}
+
+.timeline-card.dragging {
+    opacity: 0.5;
+    transform: scale(0.95);
+    cursor: grabbing;
+}
+
+.timeline-card.correct {
+    border: 3px solid #4CAF50;
+    background-color: #e8f5e9;
+}
+
+.timeline-card.incorrect {
+    border: 3px solid #F44336;
+    background-color: #ffebee;
+}
+
+.timeline-card img {
+    width: 100%;
+    height: 140px;
+    object-fit: cover;
+    border-radius: 5px;
+    margin-bottom: 8px;
+    background-color: #eee;
+    pointer-events: none;
+}
+
+.card-title {
+    font-weight: bold;
+    color: #5a4e49;
+    font-size: 1rem;
+    margin-bottom: 5px;
+}
+
+.card-date {
+    font-family: 'Dancing Script', cursive;
+    font-size: 1.3rem;
+    color: #E91E63;
+    font-weight: bold;
+    margin-top: 5px;
+    display: none;
+}
+
+.timeline-card.revealed .card-date {
+    display: block;
+}
+
+/* Zone "Carte à placer" */
+.current-card-area {
+    text-align: center;
+    padding: 0;
+    border: none;
+    box-shadow: none;
+    background: transparent;
+    margin-bottom: 20px;
+    min-height: 350px;
+}
+
+/* La carte en main draggable */
+.card-to-place {
+    width: 300px;
+    margin: 0 auto;
+    background: white;
+    padding: 15px;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    cursor: grab;
+    transition: transform 0.2s;
+    touch-action: none;
+    /* Important for custom drag */
+}
+
+/* Ghost Card style for Touch Drag */
+.ghost-card {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 200px;
+    /* Taille réduite pendant le drag */
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+    pointer-events: none;
+    /* Click-through */
+    z-index: 9999;
+    opacity: 0.9;
+    transform: translate(-50%, -50%) rotate(5deg);
+    padding: 10px;
+}
+
+.ghost-card img {
+    width: 100%;
+    height: 120px;
+    object-fit: cover;
+    border-radius: 5px;
+}
+
+.ghost-card .card-title {
+    font-size: 0.9rem;
+}
+
+.ghost-card .card-description {
+    display: none;
+    /* Hide details while dragging */
+}
+
+/* Validation */
+.validate-container {
+    text-align: center;
+    margin-top: 20px;
+    display: none;
+}
+
+#validate-timeline-btn {
+    background: linear-gradient(45deg, #4CAF50, #81C784);
+    color: white;
+    border: none;
+    padding: 15px 40px;
+    font-size: 1.5rem;
+    font-weight: bold;
+    border-radius: 50px;
+    cursor: pointer;
+    box-shadow: 0 5px 15px rgba(76, 175, 80, 0.4);
+    transition: transform 0.2s;
+}
+
+/* Mobile Optimizations */
+@media (max-width: 768px) {
+    .history-container {
+        padding: 10px;
+    }
+
+    .timeline-area {
+        min-height: 220px;
+        padding: 10px;
+        margin-bottom: 20px;
+    }
+
+    .timeline-card {
+        width: 140px;
+        min-width: 140px;
+        padding: 8px;
+    }
+
+    .timeline-card img {
+        height: 100px;
+    }
+
+    .timeline-card .card-title {
+        font-size: 0.85rem;
+    }
+
+    .current-card-area {
+        min-height: auto;
+        /* Allow shrink */
+    }
+
+    .card-to-place {
+        width: 240px;
+        padding: 10px;
+    }
+
+    .card-to-place img {
+        height: 150px;
+    }
+
+    .card-to-place .card-title {
+        font-size: 1rem !important;
+    }
+
+    .card-to-place .card-description {
+        font-size: 0.9rem;
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+}
