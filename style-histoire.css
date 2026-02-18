@@ -1,7 +1,8 @@
 /* style-histoire.css (Updated for Mobile & Touch) */
 
 .history-container {
-    max-width: 1200px;
+    max-width: 2000px;
+    /* Increased from 1200px for better visibility */
     margin: 0 auto;
     padding: 20px;
     /* Prevent default touch actions like scroll when dragging */
@@ -204,19 +205,40 @@
     }
 
     .timeline-area {
-        min-height: 220px;
+        min-height: 400px;
+        /* Increased height for vertical stack */
         padding: 10px;
         margin-bottom: 20px;
+        flex-direction: column;
+        /* Vertical stack */
+        align-items: center;
+        /* Center cards */
+        overflow-x: hidden;
+        /* Disable horizontal scroll */
+        overflow-y: auto;
+        /* Enable vertical scroll */
+        white-space: normal;
+        /* Allow wrapping */
+        gap: 10px;
     }
 
     .timeline-card {
-        width: 140px;
-        min-width: 140px;
-        padding: 8px;
+        width: 90%;
+        /* Full width cards */
+        min-width: unset;
+        /* Remove min-width constraint */
+        padding: 10px;
+        display: block;
+        /* Block display for stacking */
+        margin-bottom: 10px;
+        /* Spacing between cards */
     }
 
     .timeline-card img {
-        height: 100px;
+        height: 120px;
+        /* Slightly larger image */
+        width: 100%;
+        object-fit: cover;
     }
 
     .timeline-card .card-title {
