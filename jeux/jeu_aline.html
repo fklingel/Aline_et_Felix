@@ -90,11 +90,13 @@
         }
 
         h1 {
-            font-size: clamp(32px, 8vw, 48px);
+            font-size: clamp(24px, 6vw, 48px);
             margin: 0 0 10px 0;
             color: #E0F7FA;
             text-transform: uppercase;
             letter-spacing: 3px;
+            word-wrap: break-word;
+            padding: 0 10px;
         }
 
         @media (min-width: 600px) {
@@ -163,8 +165,9 @@
             padding: 15px;
             border-radius: 10px;
             border: 1px solid rgba(255, 255, 255, 0.3);
-            width: 250px;
-            max-width: 90%;
+            width: 100%;
+            max-width: 300px;
+            box-sizing: border-box;
         }
 
         #leaderboard h3 {
@@ -891,7 +894,7 @@
                 ctx.font = Math.round(LANE_WIDTH / 3) + "px Arial";
                 ctx.textAlign = "center";
                 ctx.textBaseline = "middle";
-                ctx.fillText(targets[i], x, TARGET_Y);
+                ctx.fillText(targets[i], x, TARGET_Y + 2);
             }
 
             notes.forEach(n => {
