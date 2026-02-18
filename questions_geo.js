@@ -37,6 +37,21 @@ const questions = [
         text: "",
         coords: [51.507351, -0.127758]
     },
+    {
+        image: "images/geo/marseille.jpg",
+        text: "",
+        coords: [43.295918, 5.371088]
+    },
+    {
+        image: "images/geo/bastille.jpg",
+        text: "",
+        coords: [45.198745, 5.725258]
+    },
+    {
+        image: "images/geo/chenonceau.jpg",
+        text: "",
+        coords: [47.324958, 1.069703]
+    },
     // Ajoutez vos questions ici. Copiez-collez le bloc {} et modifiez les valeurs.
     // Vous pouvez récupérer les coordonnées sur Google Maps (clic droit > plus d'infos).
 ];

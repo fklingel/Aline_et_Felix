@@ -10,15 +10,15 @@ const questions = [
         answer: 0
     },
     {
-        text: "Combien d'années de différence d'âge ont Aline et Félix (arrondir au chiffre entier le plus proche) ?",
-        answer: 2 // Exemple
+        text: "Aline doit choisir un maillot de bain pour sa compétition de natation synchronisée. Dans son placard, tous ses maillots sont bien rangés côte à côte. Elle prend le maillot qui est le 7ème en partant de la droite et le 4ème en partant de la gauche. \n Combien a-t-elle de maillots de bain dans son placard ?",
+        answer: 10 // Exemple
     },
     {
-        text: "Quelle est l'année de notre rencontre ?",
-        answer: 2018 // Exemple
+        text: "Trois amis débattent de la calvitie de Felix :\n \"Felix a plus de 10 000 cheveux sur la tête.\" \n \"Pas du tout, il a moins de 10 000 cheveux sur la tête, c'est certain.\" \n \"Je suis sûr que Felix a au moins un cheveu sur la tête.\" \n Sachant qu'un seul des trois amis a raison, combien de cheveux reste-t-il à Felix ?",
+        answer: 0 // Exemple
     },
     {
-        text: "Si on additionne le jour et le mois de notre mariage, quel nombre obtient-on ?",
-        answer: 20 // Exemple (si 10/10)
+        text: "Felix et Aline ont chacun reçu une boite de 20 chocolats pour Noël. Felix mange 1 chocolats par jour et Aline en mange 3, sauf les week-ends ou elle en mange le double. Combien de chocolats leur reste-t-il une semaine plus tard ?",
+        answer: 6
     }
 ];

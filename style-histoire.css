@@ -132,6 +132,17 @@
     /* Important for custom drag */
 }
 
+.card-to-place img {
+    width: 100%;
+    height: auto;
+    max-height: 300px;
+    /* Prevent overly tall images */
+    object-fit: cover;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    pointer-events: none;
+}
+
 /* Ghost Card style for Touch Drag */
 .ghost-card {
     position: fixed;
@@ -234,6 +245,7 @@
         font-size: 0.9rem;
         display: -webkit-box;
         -webkit-line-clamp: 3;
+        line-clamp: 3;
         -webkit-box-orient: vertical;
         overflow: hidden;
     }

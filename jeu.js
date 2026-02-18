@@ -21,6 +21,26 @@ document.addEventListener('DOMContentLoaded', () => {
         let completedCount = 0;
         let totalScore = 0;
 
+        // --- SYNCHRONISATION SPORT ---
+        // On recalcule la note de sport à la volée depuis les High Scores pour être sûr qu'elle est à jour
+        const alineScores = JSON.parse(localStorage.getItem('aquaRythmeScores'));
+        const felixScores = JSON.parse(localStorage.getItem('alpinHighScores'));
+
+        // Si l'un des jeux a été joué (les scores existent)
+        if (alineScores || felixScores) {
+            const bestAline = alineScores && alineScores.length > 0 ? Math.max(...alineScores) : 0;
+            const bestFelix = felixScores && felixScores.length > 0 ? Math.max(...felixScores) : 0;
+
+            // Calcul Note : (Score / 1000) plafonné à 10. Total / 20.
+            const gradeAline = Math.min(10, bestAline / 1000);
+            const gradeFelix = Math.min(10, bestFelix / 1000);
+            const totalSport = parseFloat((gradeAline + gradeFelix).toFixed(1));
+
+            // Mise à jour de l'état global
+            gameState['sport'] = totalSport;
+            localStorage.setItem('weddingGameData', JSON.stringify(gameState));
+        }
+
         // Mise à jour des cartes de matières
         MATIERES.forEach(matiere => {
             const score = gameState[matiere];
