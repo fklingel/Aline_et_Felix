@@ -130,8 +130,11 @@
     }
 
     .geo-container {
-        padding: 15px;
-        width: 95%;
+        padding: 10px;
+        width: 100%;
+        max-width: 100%;
+        box-sizing: border-box;
+        /* Ensure padding is included in width */
     }
 
     .question-text {
@@ -143,7 +146,7 @@
     }
 
     .image-container {
-        height: 300px;
-        /* Smaller height on mobile */
+        height: 250px;
+        /* Reduced further for mobile */
     }
 }

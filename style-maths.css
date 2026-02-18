@@ -44,14 +44,36 @@
 }
 
 @media (max-width: 768px) {
-    .chalk-text {
-        font-size: 1rem;
-        /* Plus petit sur mobile */
-        padding: 5px;
+    .math-container {
+        padding: 10px;
+        width: 100%;
+        max-width: 100%;
+        box-sizing: border-box;
+    }
+
+    .blackboard-frame {
+        padding: 8px;
+        /* Reduce frame thickness */
+        margin-bottom: 20px;
+        width: 100%;
+        box-sizing: border-box;
     }
 
     .blackboard {
-        padding: 20px;
+        padding: 15px 10px;
+        /* Minimal padding inside board */
+        width: 100%;
+        box-sizing: border-box;
+        border-radius: 3px;
+    }
+
+    .chalk-text {
+        font-size: 0.9rem;
+        /* Slightly larger for readability if space allows, or keep 1rem */
+        padding: 0;
+        width: 100%;
+        text-align: left;
+        /* Often better for reading problems */
     }
 }
 

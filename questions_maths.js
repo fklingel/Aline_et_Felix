@@ -18,7 +18,7 @@ const questions = [
         answer: 0 // Exemple
     },
     {
-        text: "Felix et Aline ont chacun reçu une boite de 20 chocolats pour Noël. Felix mange 1 chocolats par jour et Aline en mange 3, sauf les week-ends ou elle en mange le double. Combien de chocolats leur reste-t-il une semaine plus tard ?",
+        text: "Felix et Aline ont chacun reçu une boite de 20 chocolats pour Noël. Felix mange 1 chocolat par jour et Aline en mange 3, sauf les week-ends, où elle en mange le double. Combien de chocolats leur reste-t-il une semaine plus tard ?",
         answer: 6
     }
 ];
