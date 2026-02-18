@@ -222,7 +222,7 @@
         const GROUND_BASE_Y = 350;
         const SLOPE_ANGLE = 10 * (Math.PI / 180);
         const GRAVITY = 0.5;
-        const JUMP_FORCE = -11;
+        const JUMP_FORCE = -12;
         const RAMP_FORCE = -15;
         const START_SPEED = 6;
         const MAX_SPEED = 14;
@@ -371,7 +371,8 @@
             startScreen.classList.add('hidden');
             resetVariables();
             gameState = 'PLAYING';
-            loop();
+            lastTime = 0;
+            requestAnimationFrame(loop);
         }
 
         function resetVariables() {
@@ -447,7 +448,7 @@
         function performBackflip() {
             player.isFlipping = true;
             player.canTrick = false;
-            score += 375; // 500 * 0.75
+            score += 250; // 500 * 0.75
 
             trickText.innerText = "BACKFLIP !";
             trickText.classList.remove('show-trick');
@@ -476,16 +477,17 @@
             }
         }
 
-        function update() {
+        function update(dtScale = 1.0) {
             clouds.forEach(c => {
-                c.x -= c.speed;
+                c.x -= c.speed * dtScale;
                 if (c.x < -150) c.x = vWidth + 50;
             });
 
             if (gameState === 'PLAYING') {
                 frameCount++;
-                score += Math.floor((gameSpeed / 4) * 0.75);
-                scoreEl.innerText = score;
+                // No floor here, keep float precision
+                score += (gameSpeed / 4) * 0.4 * dtScale;
+                scoreEl.innerText = Math.floor(score); // Display integer
 
                 if (frameCount % 600 === 0 && gameSpeed < MAX_SPEED) {
                     gameSpeed += 0.2;
@@ -505,8 +507,8 @@
                     player.height = 60; player.width = 40;
                 }
 
-                player.dy += GRAVITY;
-                player.y += player.dy;
+                player.dy += GRAVITY * dtScale;
+                player.y += player.dy * dtScale;
 
                 let currentGroundY = GROUND_BASE_Y;
                 if (player.y > currentGroundY - player.height) {
@@ -520,10 +522,10 @@
                 }
 
                 if (player.isFlipping) {
-                    player.rotation -= 0.3;
+                    player.rotation -= 0.3 * dtScale;
                     if (player.rotation < -Math.PI * 2) player.rotation = 0;
                 } else if (player.canTrick) {
-                    player.rotation = -0.3;
+                    player.rotation = -0.3 * dtScale;
                 } else {
                     player.rotation = player.isGrounded ? 0.1 : -0.1;
                 }
@@ -533,12 +535,12 @@
 
                 // Spawning check using vWidth
                 if (gap > 550) {
-                    if (Math.random() < 0.04) spawnObstacle();
+                    if (Math.random() < 0.04 * dtScale) spawnObstacle();
                 }
 
                 for (let i = obstacles.length - 1; i >= 0; i--) {
                     let obs = obstacles[i];
-                    obs.x -= gameSpeed * obs.speedFactor;
+                    obs.x -= gameSpeed * obs.speedFactor * dtScale;
 
                     let pX = player.x + 10;
                     let pW = player.width - 20;
@@ -574,7 +576,7 @@
                     if (obs.x + obs.width < -200) obstacles.splice(i, 1);
                 }
             } else if (gameState === 'CRASHED' || gameState === 'RESCUING') {
-                updateRescueSequence();
+                updateRescueSequence(dtScale);
             }
         }
 
@@ -589,29 +591,30 @@
             helicopter.y = -100;
         }
 
-        function updateRescueSequence() {
-            helicopter.rotorAngle += 0.8;
+        function updateRescueSequence(dtScale = 1.0) {
+            helicopter.rotorAngle += 0.8 * dtScale;
 
             if (helicopter.state === 'INCOMING') {
                 let dx = player.x - helicopter.x;
                 let dy = (player.y - 180) - helicopter.y;
-                helicopter.x += dx * 0.04;
-                helicopter.y += dy * 0.04;
+                helicopter.x += dx * 0.04 * dtScale;
+                helicopter.y += dy * 0.04 * dtScale;
                 if (Math.abs(dx) < 5 && Math.abs(dy) < 5) helicopter.state = 'HOVERING';
             }
             else if (helicopter.state === 'HOVERING') {
-                if (helicopter.ropeLength < 140) helicopter.ropeLength += 3;
+                if (helicopter.ropeLength < 140) helicopter.ropeLength += 3 * dtScale;
                 else { helicopter.state = 'LIFTING'; gameState = 'RESCUING'; }
             }
             else if (helicopter.state === 'LIFTING') {
-                player.x = helicopter.x; player.y -= 3; helicopter.ropeLength -= 3;
+                player.x = helicopter.x; player.y -= 3 * dtScale; helicopter.ropeLength -= 3 * dtScale;
                 if (helicopter.ropeLength <= 10) { helicopter.ropeLength = 10; helicopter.state = 'DEPARTING'; }
             }
             else if (helicopter.state === 'DEPARTING') {
-                helicopter.x -= 8; helicopter.y -= 4;
+                helicopter.x -= 8 * dtScale; helicopter.y -= 4 * dtScale;
                 player.x = helicopter.x; player.y = helicopter.y + 40;
                 if (helicopter.x < -150) {
                     gameState = 'OVER';
+                    score = Math.floor(score); // Finalize score as integer
                     let grade = Math.min(10, score / 1000).toFixed(1);
                     localStorage.setItem('grade_felix', grade);
                     finalScoreEl.innerText = score + " (Note: " + grade + "/10)";
@@ -767,8 +770,17 @@
             ctx.restore();
         }
 
-        function loop() {
-            update();
+        let lastTime = 0;
+        function loop(timestamp) {
+            if (!lastTime) lastTime = timestamp;
+            const dt = (timestamp - lastTime) / 1000;
+            lastTime = timestamp;
+
+            // Cap dt to prevent huge jumps (e.g. tab switch)
+            // Use 1/60 as baseline for scaling
+            const timeScale = Math.min(dt, 0.1) * 120;
+
+            update(timeScale);
             draw();
             gameLoopId = requestAnimationFrame(loop);
         }
