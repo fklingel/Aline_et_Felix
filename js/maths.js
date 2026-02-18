@@ -65,12 +65,12 @@ function checkAnswer() {
     nextBtn.style.display = 'inline-block';
 
     if (userAnswer === correctAnswer) {
-        feedback.textContent = "Correct ! (+4 points)";
+        feedback.textContent = "Juste ! (+4 points)";
         feedback.className = "feedback-correct";
         score += POINTS_PER_QUESTION;
         totalScore += POINTS_PER_QUESTION;
     } else {
-        feedback.textContent = `Faux ! La réponse était ${correctAnswer}.`;
+        feedback.textContent = `Faux !`;
         feedback.className = "feedback-incorrect";
     }
 

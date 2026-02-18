@@ -1,0 +1,189 @@
+/* style-album.css - Styles pour les albums photos (Bebe, Bestof, Worstof) */
+
+body {
+    font-family: 'Nunito', sans-serif;
+    background-color: #F8F3E9;
+    color: #424242;
+    margin: 0;
+    padding: 20px;
+    min-height: 100vh;
+}
+
+.album-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+/* --- Navigation (Retour accueil) --- */
+/* --- Navigation (Retour accueil) --- */
+.page-nav {
+    display: flex;
+    justify-content: center;
+    /* Centré */
+    gap: 20px;
+    /* Espace entre les boutons */
+    margin-bottom: 20px;
+}
+
+.nav-link {
+    display: inline-block;
+}
+
+/* Navigation Icons (Style Identique à jeu.html) */
+.nav-link.nav-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent !important;
+    padding: 0 !important;
+    box-shadow: none !important;
+    vertical-align: middle;
+}
+
+.nav-link.nav-icon img {
+    width: 50px;
+    height: 50px;
+    transition: transform 0.2s ease;
+    filter: drop-shadow(0 2px 5px rgba(0, 0, 0, 0.1));
+    margin-right: 0;
+    /* Pas de marge si pas de texte */
+}
+
+.nav-link.nav-icon:hover img {
+    transform: scale(1.15);
+    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2));
+}
+
+/* --- Corner Decorations --- */
+.corner {
+    position: fixed;
+    width: 20vw;
+    max-width: 280px;
+    height: auto;
+    z-index: -1;
+}
+
+.top-left {
+    top: 0;
+    left: 0;
+}
+
+.top-right {
+    top: 0;
+    right: 0;
+}
+
+.bottom-left {
+    bottom: 0;
+    left: 0;
+}
+
+.bottom-right {
+    bottom: 0;
+    right: 0;
+}
+
+@media (max-width: 768px) {
+    .corner {
+        width: 25vw;
+        max-width: 120px;
+    }
+}
+
+/* --- Header --- */
+header {
+    margin-bottom: 50px;
+    text-align: center;
+    /* Centrer le titre */
+}
+
+header h1 {
+    font-family: 'Dancing Script', cursive;
+    font-size: clamp(3rem, 6vw, 4.5rem);
+    color: #5a4e49;
+    /* Même couleur que le titre principal */
+    margin-bottom: 10px;
+    /* text-shadow supprimé pour correspondre au style de jeu.html */
+}
+
+header p {
+    font-size: 1.2rem;
+    color: #796c66;
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+/* --- Grille Photos (Effet Polaroid) --- */
+.photo-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 40px;
+    padding: 20px;
+}
+
+.photo-card {
+    background: white;
+    padding: 15px 15px 50px 15px;
+    /* Extra padding bottom for caption space */
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+    transition: transform 0.3s ease, z-index 0.3s ease;
+    position: relative;
+    cursor: pointer;
+}
+
+.photo-card:hover {
+    transform: scale(1.1) rotate(0deg) !important;
+    /* Reset rotation on hover */
+    z-index: 10;
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.25);
+}
+
+.photo-card img {
+    width: 100%;
+    height: 250px;
+    object-fit: cover;
+    display: block;
+    background-color: #eee;
+    /* Placeholder color */
+}
+
+/* Rotation aléatoire pour effet vrac */
+.photo-card:nth-child(odd) {
+    transform: rotate(2deg);
+}
+
+.photo-card:nth-child(even) {
+    transform: rotate(-2deg);
+}
+
+.photo-card:nth-child(3n) {
+    transform: rotate(1deg);
+}
+
+.photo-card:nth-child(3n+1) {
+    transform: rotate(-3deg);
+}
+
+/* Caption style (écrit à la main) */
+.photo-caption {
+    font-family: 'Dancing Script', cursive;
+    font-size: 1.5rem;
+    color: #555;
+    position: absolute;
+    bottom: 10px;
+    left: 0;
+    width: 100%;
+    text-align: center;
+}
+
+/* --- Responsive --- */
+@media (max-width: 768px) {
+    .photo-grid {
+        gap: 20px;
+    }
+
+    header h1 {
+        font-size: 2.5rem;
+    }
+}

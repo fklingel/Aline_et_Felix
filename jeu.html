@@ -76,6 +76,7 @@
 
         </main>
 
+
         <footer>
             <h3>Votre Bilan</h3>
             <div class="summary">
@@ -84,7 +85,85 @@
             </div>
             <p id="final-remark" class="hidden">Terminez toutes les épreuves pour voir votre mention !</p>
         </footer>
+        <section id="rewards-section" class="rewards-container">
+            <h3>Récompenses</h3>
+            <p class="rewards-intro">Débloquez des récompenses en augmentant votre moyenne générale !</p>
+
+            <div class="rewards-grid">
+                <!-- Palier 10 -->
+                <div class="reward-card locked" id="reward-10" data-threshold="10">
+                    <div class="reward-icon">📷</div>
+                    <div class="reward-content">
+                        <h3>Moyenne ≥ 10/20</h3>
+                        <p>Les premières photos de nous</p>
+                        <a href="bebe.html" class="reward-link">Voir la
+                            récompense</a>
+                    </div>
+                    <div class="lock-overlay"><span class="lock-icon">🔒</span></div>
+                </div>
+
+                <!-- Palier 12 -->
+                <div class="reward-card locked" id="reward-12" data-threshold="12">
+                    <div class="reward-icon">🌟</div>
+                    <div class="reward-content">
+                        <h3>Moyenne ≥ 12/20</h3>
+                        <p>Les meilleures photos de nous</p>
+                        <a href="bestof.html" class="reward-link">Voir la
+                            récompense</a>
+                    </div>
+                    <div class="lock-overlay"><span class="lock-icon">🔒</span></div>
+                </div>
+
+                <!-- Palier 14 -->
+                <div class="reward-card locked" id="reward-14" data-threshold="14">
+                    <div class="reward-icon">🤪</div>
+                    <div class="reward-content">
+                        <h3>Moyenne ≥ 14/20</h3>
+                        <p>Les pires photos de nous</p>
+                        <a href="worstof.html" class="reward-link">Voir la
+                            récompense</a>
+                    </div>
+                    <div class="lock-overlay"><span class="lock-icon">🔒</span></div>
+                </div>
+
+                <!-- Palier 16 -->
+                <div class="reward-card locked" id="reward-16" data-threshold="16">
+                    <div class="reward-icon">🕵️‍♀️</div>
+                    <div class="reward-content">
+                        <h3>Moyenne ≥ 16/20</h3>
+                        <p>Un précieux indice pour le mariage</p>
+                        <a href="indice.html" class="reward-link">Voir la récompense</a>
+                    </div>
+                    <div class="lock-overlay"><span class="lock-icon">🔒</span></div>
+                </div>
+
+                <!-- Palier 18 -->
+                <div class="reward-card locked" id="reward-18" data-threshold="18">
+                    <div class="reward-icon">🎬</div>
+                    <div class="reward-content">
+                        <h3>Moyenne ≥ 18/20</h3>
+                        <p>Un petit spoil</p>
+                        <a href="petit_spoil.html" class="reward-link">Voir la récompense</a>
+                    </div>
+                    <div class="lock-overlay"><span class="lock-icon">🔒</span></div>
+                </div>
+
+                <!-- Palier 20 -->
+                <div class="reward-card locked" id="reward-20" data-threshold="20">
+                    <div class="reward-icon">🤯</div>
+                    <div class="reward-content">
+                        <h3>Moyenne = 20/20</h3>
+                        <p>Un grand spoil</p>
+                        <a href="grand_spoil.html" class="reward-link">Voir la récompense</a>
+                    </div>
+                    <div class="lock-overlay"><span class="lock-icon">🔒</span></div>
+                </div>
+            </div>
+        </section>
+
     </div>
+
+
 
     <script src="jeu.js" defer></script>
 </body>

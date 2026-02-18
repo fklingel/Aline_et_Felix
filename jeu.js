@@ -72,12 +72,18 @@ document.addEventListener('DOMContentLoaded', () => {
             let remark = "";
             if (finalAverage < 10) {
                 remark = "Mention 'Peut mieux faire' ! On vous attend au rattrapage au vin d'honneur !";
+            } else if (finalAverage < 12) {
+                remark = "Ca passe tout juste ! Mais on vous aime quand même.";
             } else if (finalAverage < 14) {
                 remark = "Mention 'Assez Bien' ! Vous avez bien suivi notre histoire.";
+            } else if (finalAverage < 16) {
+                remark = "Mention 'Bien' ! Vous êtes fortiches !";
             } else if (finalAverage < 18) {
-                remark = "Mention 'Très Bien' ! Vous faites partie des experts de notre couple !";
-            } else {
+                remark = "Mention 'Très Bien' ! Il va falloir fêter ça !";
+            } else if (finalAverage < 20) {
                 remark = "Mention 'Excellent' avec les félicitations du jury ! Impressionnant !";
+            } else {
+                remark = "Mention 'Parfait' ! Décidément, vous êtes incollables (ou vous avez rééssayé beaucoup de fois) !";
             }
             remarkElement.textContent = remark;
             remarkElement.classList.remove('hidden');
@@ -85,6 +91,24 @@ document.addEventListener('DOMContentLoaded', () => {
             remarkElement.textContent = "Terminez toutes les épreuves pour voir votre mention !";
             remarkElement.classList.add('hidden'); // On la cache si tout n'est pas fini
         }
+
+        // --- GESTION DES RÉCOMPENSES ---
+        const rewards = document.querySelectorAll('.reward-card');
+
+        rewards.forEach(card => {
+            // Par défaut, on verrouille tout
+            card.classList.add('locked');
+
+            if (completedCount === MATIERES.length) {
+                const threshold = parseFloat(card.dataset.threshold);
+                const finalAverage = parseFloat(document.getElementById('average-score').textContent);
+
+                // Si la moyenne est suffisante, on déverrouille
+                if (finalAverage >= threshold) {
+                    card.classList.remove('locked');
+                }
+            }
+        });
     }
 
     // 3. Appel initial pour afficher les données dès l'arrivée sur la page
