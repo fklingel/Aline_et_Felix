@@ -616,7 +616,15 @@
                     gameState = 'OVER';
                     score = Math.floor(score); // Finalize score as integer
                     let grade = Math.min(10, score / 1000).toFixed(1);
-                    localStorage.setItem('grade_felix', grade);
+
+                    // Check High Score before saving grade
+                    const currentScores = JSON.parse(localStorage.getItem('alpinHighScores')) || [];
+                    const bestScore = currentScores.length > 0 ? Math.max(...currentScores) : 0;
+
+                    if (score >= bestScore) {
+                        localStorage.setItem('grade_felix', grade);
+                    }
+
                     finalScoreEl.innerText = score + " (Note: " + grade + "/10)";
                     saveScore(score);
                     gameOverScreen.classList.remove('hidden');

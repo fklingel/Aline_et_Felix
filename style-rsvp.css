@@ -288,3 +288,32 @@ h1 {
     color: #5a4e49;
     border-bottom: 2px solid #5a4e49;
 }
+
+/* Navigation Icons */
+.nav-link.nav-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent !important;
+    padding: 0 !important;
+    box-shadow: none !important;
+    vertical-align: middle;
+}
+
+.nav-link.nav-icon img {
+    width: 50px;
+    height: 50px;
+    transition: transform 0.2s ease;
+    filter: drop-shadow(0 2px 5px rgba(0, 0, 0, 0.1));
+}
+
+.nav-link.nav-icon:hover img {
+    transform: scale(1.15);
+    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2));
+}
+
+.page-nav {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}

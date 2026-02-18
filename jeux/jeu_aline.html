@@ -761,9 +761,17 @@
             cancelAnimationFrame(gameLoopId);
             musicPlayer.pause();
 
-            saveScore(score);
+            // Check High Score for Grade
+            const currentScores = JSON.parse(localStorage.getItem('aquaRythmeScores')) || [];
+            const bestScore = currentScores.length > 0 ? Math.max(...currentScores) : 0;
             let grade = Math.min(10, score / 1000).toFixed(1);
-            localStorage.setItem('grade_aline', grade);
+
+            // Only update grade if this is a new high score (or tie)
+            if (score >= bestScore) {
+                localStorage.setItem('grade_aline', grade);
+            }
+
+            saveScore(score);
             document.getElementById('finalScore').innerText = score + " (Note: " + grade + "/10)";
 
             document.getElementById('hud').classList.add('hidden');

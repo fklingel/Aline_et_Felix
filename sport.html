@@ -190,8 +190,8 @@
 
     <div class="game-container quiz-container">
         <nav class="page-nav">
-            <a href="index.html" class="nav-link">← Retour à l'accueil</a>
-            <a href="jeu.html" class="nav-link">Retour aux épreuves ↑</a>
+            <a href="index.html" class="nav-link nav-icon"><img src="images/icones/home.png" alt="Accueil"></a>
+            <a href="jeu.html" class="nav-link nav-icon"><img src="images/icones/back.png" alt="Épreuves"></a>
         </nav>
 
         <div id="selection-screen">
@@ -273,9 +273,9 @@
             document.getElementById('aline-highscore').textContent = alineHighscore;
             document.getElementById('felix-highscore').textContent = felixHighscore;
 
-            // Grades
-            const gradeAline = parseFloat(localStorage.getItem('grade_aline')) || 0;
-            const gradeFelix = parseFloat(localStorage.getItem('grade_felix')) || 0;
+            // Grades derived from High Scores
+            const gradeAline = Math.min(10, alineHighscore / 1000);
+            const gradeFelix = Math.min(10, felixHighscore / 1000);
 
             document.getElementById('aline-grade').textContent = gradeAline.toFixed(1) + "/10";
             document.getElementById('felix-grade').textContent = gradeFelix.toFixed(1) + "/10";

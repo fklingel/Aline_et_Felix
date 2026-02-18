@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,14 +9,19 @@
     <link rel="stylesheet" href="style-quiz.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Nunito:wght@400;700&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Nunito:wght@400;700&display=swap"
+        rel="stylesheet">
 </head>
+
 <body>
-    <img src="images/top_left.png" alt="" class="corner top-left"><img src="images/top_right.png" alt="" class="corner top-right"><img src="images/bottom_left.png" alt="" class="corner bottom-left"><img src="images/bottom_right.png" alt="" class="corner bottom-right">
+    <img src="images/top_left.png" alt="" class="corner top-left"><img src="images/top_right.png" alt=""
+        class="corner top-right"><img src="images/bottom_left.png" alt="" class="corner bottom-left"><img
+        src="images/bottom_right.png" alt="" class="corner bottom-right">
     <div class="game-container quiz-container">
         <nav class="page-nav">
-            <a href="index.html" class="nav-link">← Retour à l'accueil</a>
-            <a href="jeu.html" class="nav-link">Retour aux épreuves ↑</a>
+            <a href="index.html" class="nav-link nav-icon"><img src="images/icones/home.png" alt="Accueil"></a>
+            <a href="jeu.html" class="nav-link nav-icon"><img src="images/icones/back.png" alt="Épreuves"></a>
         </nav>
         <div id="quiz-active">
             <header>
@@ -25,11 +31,13 @@
             <main>
                 <p class="instruction">Écoutez l'extrait et tapez le nom de la chanson :</p>
                 <div class="video-wrapper">
-                    <video id="whistling-animation" class="whistling-video" loop muted playsinline src="videos/sifflement.mp4"></video>
+                    <video id="whistling-animation" class="whistling-video" loop muted playsinline
+                        src="videos/sifflement.mp4"></video>
                 </div>
                 <audio id="audio-player" controls></audio>
                 <div class="answer-section">
-                    <input type="text" id="answer-input" placeholder="Votre réponse..."><button id="submit-button">Valider</button>
+                    <input type="text" id="answer-input" placeholder="Votre réponse..."><button
+                        id="submit-button">Valider</button>
                 </div>
                 <p id="feedback-text"></p>
             </main>
@@ -43,4 +51,5 @@
     </div>
     <script src="musique.js" defer></script>
 </body>
+
 </html>
