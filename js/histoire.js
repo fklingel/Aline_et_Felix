@@ -75,15 +75,33 @@ function renderCurrentCard() {
     addTouchDnD(el, 'new');
 }
 
+
 function renderTimeline(lisIndices = []) {
     const timelineContainer = document.getElementById('timeline-container');
+    const existingCards = timelineContainer.querySelectorAll('.timeline-card');
 
-    // Ne pas vider s'il y a des enfants déjà (optimisation possible), mais ici on reset tout pour simplifier
+    // Optimisation simple : si on drag, on re-render PAS tout
+    // Mais ici on simplifie
     timelineContainer.innerHTML = '';
 
+    // Cas spécial : vide
     if (timeline.length === 0) {
-        timelineContainer.innerHTML = '<div class="empty-message">Déposez votre première carte ici !</div>';
+        if (!gameFinished) {
+            // Bouton géant ou message + bouton
+            const msg = document.createElement('div');
+            msg.className = 'empty-message';
+            msg.innerText = 'Placez votre première carte !';
+            timelineContainer.appendChild(msg);
+            timelineContainer.appendChild(createInsertButton(0));
+        } else {
+            timelineContainer.innerHTML = '<div class="empty-message">Vide</div>';
+        }
         return;
+    }
+
+    // Bouton Insertion Début
+    if (!gameFinished && currentCard) {
+        timelineContainer.appendChild(createInsertButton(0));
     }
 
     timeline.forEach((card, index) => {
@@ -94,7 +112,33 @@ function renderTimeline(lisIndices = []) {
 
         const cardElement = createTimelineCardElement(card, index, isCorrect);
         timelineContainer.appendChild(cardElement);
+
+        // Bouton Insertion Après chaque carte
+        if (!gameFinished && currentCard) {
+            timelineContainer.appendChild(createInsertButton(index + 1));
+        }
     });
+}
+
+function createInsertButton(index) {
+    const btn = document.createElement('button');
+    btn.className = 'insert-btn';
+    btn.innerHTML = '+';
+    btn.title = 'Insérer ici';
+    btn.onclick = (e) => {
+        e.stopPropagation(); // Évite trigger autres events
+        handleManualInsert(index);
+    };
+    return btn;
+}
+
+function handleManualInsert(index) {
+    // Insère la currentCard à l'index donné
+    if (!currentCard) return;
+
+    timeline.splice(index, 0, currentCard);
+    drawNextCard();
+    renderTimeline();
 }
 
 function createTimelineCardElement(card, index, isCorrectForDisplay = false) {
@@ -153,17 +197,18 @@ function addStandardDnD(el, type) {
     });
 }
 
+
 function setupTimelineDropZone() {
     const timelineContainer = document.getElementById('timeline-container');
 
     timelineContainer.addEventListener('dragover', (e) => {
         e.preventDefault();
-        const afterElement = getDragAfterElement(timelineContainer, e.clientX);
+        const afterElement = getDragAfterElement(timelineContainer, e.clientX, e.clientY);
     });
 
     timelineContainer.addEventListener('drop', (e) => {
         e.preventDefault();
-        handleDropAction(e.clientX);
+        handleDropAction(e.clientX, e.clientY);
     });
 }
 
@@ -180,9 +225,9 @@ function autoSizeText(element) {
     }
 }
 
-function handleDropAction(clientX) {
+function handleDropAction(x, y) {
     const timelineContainer = document.getElementById('timeline-container');
-    const afterElement = getDragAfterElement(timelineContainer, clientX);
+    const afterElement = getDragAfterElement(timelineContainer, x, y);
 
     let targetIndex;
     if (afterElement == null) {
@@ -210,18 +255,26 @@ function handleDropAction(clientX) {
 }
 
 
-function getDragAfterElement(container, x) {
+function getDragAfterElement(container, x, y) {
     const draggableElements = [...container.querySelectorAll('.timeline-card:not(.dragging)')];
+    const isColumn = window.innerWidth <= 768; // Mobile Breakpoint
 
     return draggableElements.reduce((closest, child) => {
         const box = child.getBoundingClientRect();
-        const offset = x - box.left - box.width / 2;
+        let offset;
+
+        if (isColumn) {
+            offset = y - box.top - box.height / 2;
+        } else {
+            offset = x - box.left - box.width / 2;
+        }
 
         if (offset < 0 && offset > closest.offset) {
             return { offset: offset, element: child };
         } else {
             return closest;
         }
+
     }, { offset: Number.NEGATIVE_INFINITY }).element;
 }
 
@@ -235,9 +288,14 @@ function addTouchDnD(el, type) {
 }
 
 function handleTouchStart(e, el, type) {
+    // Only drag cards or images, not buttons
+    if (e.target.tagName === 'BUTTON') return;
+
     if (gameFinished) return;
 
     // Prevent scrolling
+    // e.preventDefault(); // On ne prevent pas ici pour permettre scroll si pas drag ?
+    // Mais on drag direct, donc prevent
     e.preventDefault();
 
     const touch = e.touches[0];
@@ -272,7 +330,7 @@ function handleTouchMove(e) {
     updateGhostPosition(touch.clientX, touch.clientY);
 
     // Auto-scroll timeline
-    autoScrollTimeline(touch.clientX);
+    autoScrollTimeline(touch.clientX, touch.clientY);
 }
 
 function handleTouchEnd(e) {
@@ -280,13 +338,11 @@ function handleTouchEnd(e) {
 
     // Get drop position from the last touch coordinate
     const touch = e.changedTouches[0];
-    const dropTarget = document.elementFromPoint(touch.clientX, touch.clientY);
 
-    // Check if dropped near timeline
+    // Check collision simple
     const timelineArea = document.querySelector('.timeline-area');
     const timelineRect = timelineArea.getBoundingClientRect();
 
-    // Check collision simple
     const isOverTimeline = (
         touch.clientX >= timelineRect.left &&
         touch.clientX <= timelineRect.right &&
@@ -295,14 +351,18 @@ function handleTouchEnd(e) {
     );
 
     if (isOverTimeline) {
-        handleDropAction(touch.clientX);
+        handleDropAction(touch.clientX, touch.clientY);
     }
 
     // Cleanup
-    document.body.removeChild(touchDragEl);
+    if (touchDragEl && touchDragEl.parentNode) {
+        document.body.removeChild(touchDragEl);
+    }
     touchDragEl = null;
+
     if (touchSrcEl) touchSrcEl.style.opacity = '1';
     touchSrcEl = null;
+
 }
 
 function updateGhostPosition(x, y) {
@@ -312,15 +372,24 @@ function updateGhostPosition(x, y) {
     }
 }
 
-function autoScrollTimeline(x) {
+function autoScrollTimeline(x, y) {
     const timelineArea = document.querySelector('.timeline-area');
     const rect = timelineArea.getBoundingClientRect();
     const threshold = 50; // pixels from edge
+    const isColumn = window.innerWidth <= 768;
 
-    if (x < rect.left + threshold) {
-        timelineArea.scrollLeft -= 5;
-    } else if (x > rect.right - threshold) {
-        timelineArea.scrollLeft += 5;
+    if (isColumn) {
+        if (y < rect.top + threshold) {
+            timelineArea.scrollTop -= 5;
+        } else if (y > rect.bottom - threshold) {
+            timelineArea.scrollTop += 5;
+        }
+    } else {
+        if (x < rect.left + threshold) {
+            timelineArea.scrollLeft -= 5;
+        } else if (x > rect.right - threshold) {
+            timelineArea.scrollLeft += 5;
+        }
     }
 }
 

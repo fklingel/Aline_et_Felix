@@ -89,8 +89,8 @@ document.addEventListener('DOMContentLoaded', () => {
         submitButton.disabled = true;
 
         // Affiche l'image réponse
-        animalReveal.src = `images/${currentQuestion.imageFile}`;
-        animalReveal.style.display = 'block'; // Affiche l'image
+        // animalReveal.src = `images/${currentQuestion.imageFile}`;
+        // animalReveal.style.display = 'block'; // Affiche l'image
 
         if (isCorrect) {
             score++;
@@ -98,7 +98,8 @@ document.addEventListener('DOMContentLoaded', () => {
             feedbackText.className = 'feedback-correct'; // Assurez-vous d'avoir ce style dans CSS
             feedbackText.style.color = 'green';
         } else {
-            feedbackText.textContent = `Dommage ! C'était un ${currentQuestion.correctAnswer}.`;
+            const hint = currentQuestion.correctAnswer.charAt(0).toUpperCase() + "...";
+            feedbackText.textContent = `Dommage ! C'était un ${hint}`;
             feedbackText.className = 'feedback-incorrect';
             feedbackText.style.color = 'red';
         }
@@ -107,7 +108,7 @@ document.addEventListener('DOMContentLoaded', () => {
         setTimeout(() => {
             currentQuestionIndex++;
             loadQuestion();
-        }, 4000);
+        }, 2500);
     }
 
     function endQuiz() {
