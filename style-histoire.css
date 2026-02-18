@@ -9,6 +9,11 @@
     touch-action: pan-y;
 }
 
+/* Override default game container width for History game */
+.game-container {
+    max-width: 1600px !important;
+}
+
 /* Zone de la frise */
 .timeline-area {
     background-color: #f5f5f5;

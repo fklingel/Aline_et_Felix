@@ -55,19 +55,19 @@ const questions = [
     },
     {
         date: "2018-05-15",
-        title: "La France gagne sa deuxième Coupe du Monde de foot",
-        description: "",
+        title: "Deuxième étoile",
+        description: "Pour les bleus au foot",
         image: "images/histoire/coupe_du_monde_foot.png"
     },
     {
         date: "2023-05-06",
-        title: "Couronnement de Charles III d'Angleterre",
+        title: "Couronnement de Charles III",
         description: "",
         image: "images/histoire/couronnement_charles.png"
     },
     {
         date: "2007-09-01",
-        title: "Aline commence la natation synchronisée",
+        title: "Aline commence la synchro",
         description: "",
         image: "images/histoire/aline_synchro.png"
     },
@@ -85,7 +85,7 @@ const questions = [
     },
     {
         date: "2013-05-17",
-        title: "Mariage pour tous en France",
+        title: "Mariage pour tous",
         description: "",
         image: "images/histoire/mariage_pour_tous.png"
     },
@@ -97,13 +97,13 @@ const questions = [
     },
     {
         date: "2023-06-21",
-        title: "Aline et Felix achètent un appart",
+        title: "On achète un appart",
         description: "À Gregre city",
         image: "images/histoire/appart_grenoble.png"
     },
     {
         date: "2024-06-25",
-        title: "Aline et Felix adoptent un chat",
+        title: "On adopte un chat",
         description: "Pimousse la terreur !",
         image: "images/histoire/adoption_pimousse.png"
     },

@@ -64,6 +64,13 @@ function renderCurrentCard() {
     `;
 
     const el = document.getElementById('new-card-draggable');
+
+    // Ajuster la taille du texte pour la nouvelle carte aussi
+    setTimeout(() => {
+        const titleEl = el.querySelector('.card-title');
+        if (titleEl) autoSizeText(titleEl);
+    }, 0);
+
     addStandardDnD(el, 'new');
     addTouchDnD(el, 'new');
 }
@@ -114,6 +121,14 @@ function createTimelineCardElement(card, index, isCorrectForDisplay = false) {
         ${dateHtml}
     `;
 
+    // Ajuster la taille du texte après création (petit délai pour que le rendu soit fait)
+    setTimeout(() => {
+        const titleEl = el.querySelector('.card-title');
+        if (titleEl) autoSizeText(titleEl);
+    }, 0);
+
+
+
     if (!gameFinished) {
         addStandardDnD(el, 'timeline');
         addTouchDnD(el, 'timeline');
@@ -150,6 +165,19 @@ function setupTimelineDropZone() {
         e.preventDefault();
         handleDropAction(e.clientX);
     });
+}
+
+// Fonction utilitaire pour ajuster la taille du texte
+function autoSizeText(element) {
+    let fontSize = 1.2; // Taille de base en rem (ajustée par rapport au CSS)
+    element.style.fontSize = fontSize + 'rem';
+    element.style.whiteSpace = 'nowrap';
+
+    // Réduire tant que ça dépasse (scrollWidth > offsetWidth)
+    while (element.scrollWidth > element.clientWidth && fontSize > 0.6) {
+        fontSize -= 0.05;
+        element.style.fontSize = fontSize + 'rem';
+    }
 }
 
 function handleDropAction(clientX) {
