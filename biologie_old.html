@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,10 +9,16 @@
     <link rel="stylesheet" href="style-quiz.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Nunito:wght@400;700&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Nunito:wght@400;700&display=swap"
+        rel="stylesheet">
+    <script src="js/tracking.js"></script>
 </head>
+
 <body>
-    <img src="images/top_left.png" alt="" class="corner top-left"><img src="images/top_right.png" alt="" class="corner top-right"><img src="images/bottom_left.png" alt="" class="corner bottom-left"><img src="images/bottom_right.png" alt="" class="corner bottom-right">
+    <img src="images/top_left.png" alt="" class="corner top-left"><img src="images/top_right.png" alt=""
+        class="corner top-right"><img src="images/bottom_left.png" alt="" class="corner bottom-left"><img
+        src="images/bottom_right.png" alt="" class="corner bottom-right">
     <div class="game-container quiz-container">
         <nav class="page-nav">
             <a href="index.html" class="nav-link">← Retour à l'accueil</a>
@@ -29,9 +36,21 @@
                     <img src="" alt="Animal à placer" id="animal-image" class="animal-draggable">
                 </div>
                 <div class="drop-zone-container">
-                    <div id="aline" class="drop-zone owner-zone"><h4>Aline</h4><div class="owner-photo-container"><img src="images/aline.png" alt="Aline" class="owner-photo"></div></div>
-                    <div id="felix" class="drop-zone owner-zone"><h4>Felix</h4><div class="owner-photo-container"><img src="images/felix.png" alt="Felix" class="owner-photo"></div></div>
-                    <div id="both" class="drop-zone owner-zone"><h4>Nous deux</h4><div class="owner-photo-container"><img src="images/aline_felix.png" alt="Aline et Felix" class="owner-photo"></div></div>
+                    <div id="aline" class="drop-zone owner-zone">
+                        <h4>Aline</h4>
+                        <div class="owner-photo-container"><img src="images/aline.png" alt="Aline" class="owner-photo">
+                        </div>
+                    </div>
+                    <div id="felix" class="drop-zone owner-zone">
+                        <h4>Felix</h4>
+                        <div class="owner-photo-container"><img src="images/felix.png" alt="Felix" class="owner-photo">
+                        </div>
+                    </div>
+                    <div id="both" class="drop-zone owner-zone">
+                        <h4>Nous deux</h4>
+                        <div class="owner-photo-container"><img src="images/aline_felix.png" alt="Aline et Felix"
+                                class="owner-photo"></div>
+                    </div>
                 </div>
             </main>
         </div>
@@ -45,10 +64,12 @@
     <div id="feedback-overlay" class="feedback-overlay hidden">
         <div class="feedback-content">
             <h2 id="feedback-title"></h2>
-            <img src="" alt="Photo réponse" id="real-photo"><p>Photo souvenir !</p>
+            <img src="" alt="Photo réponse" id="real-photo">
+            <p>Photo souvenir !</p>
         </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
     <script src="biologie.js" defer></script>
 </body>
+
 </html>
