@@ -37,6 +37,21 @@ document.addEventListener('DOMContentLoaded', () => {
             audioFile: 'Dindon.mp3',
             imageFile: 'Dindon.jpg'
         },
+        {
+            correctAnswer: 'âne',
+            audioFile: 'Ane.mp3',
+            imageFile: 'Ane.jpg'
+        },
+        {
+            correctAnswer: 'phoque',
+            audioFile: 'Phoque.mp3',
+            imageFile: 'Phoque.jpg'
+        },
+        {
+            correctAnswer: 'moustique',
+            audioFile: 'Moustique.mp3',
+            imageFile: 'Moustique.jpg'
+        },
         // Ajoutez d'autres animaux...
     ];
 
