@@ -303,7 +303,21 @@ footer h3 {
 
 .reward-icon {
     font-size: 3rem;
+    /* Pour les emojis de fallback si besoin */
     margin-bottom: 15px;
+    display: flex;
+    /* Centrer l'image */
+    justify-content: center;
+    align-items: center;
+    height: 80px;
+    /* Fixer une hauteur pour alignement */
+}
+
+.reward-icon img {
+    max-height: 100%;
+    max-width: 100%;
+    object-fit: contain;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
 }
 
 .reward-content h3 {
@@ -374,6 +388,8 @@ footer h3 {
     font-size: 3rem;
     color: #757575;
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    transform: translateY(-30px);
+    /* Décalage vers le haut */
 }
 
 /* Couleurs spécifiques par palier (quand débloqué) */

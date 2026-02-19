@@ -107,8 +107,11 @@ document.addEventListener('DOMContentLoaded', () => {
         quizEndScreen.classList.remove('hidden');
         finalScoreDisplay.textContent = score;
         const gameState = JSON.parse(localStorage.getItem('weddingGameData'));
-        gameState.musique = score;
-        localStorage.setItem('weddingGameData', JSON.stringify(gameState));
+        const currentScore = gameState['musique'];
+        if (currentScore === null || score > currentScore) {
+            gameState['musique'] = score;
+            localStorage.setItem('weddingGameData', JSON.stringify(gameState));
+        }
     }
 
     audioPlayer.addEventListener('play', () => {

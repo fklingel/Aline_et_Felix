@@ -13,9 +13,19 @@ document.addEventListener('DOMContentLoaded', () => {
             imageFile: 'Cheval.jpg'
         },
         {
-            correctAnswer: 'chevre',
+            correctAnswer: 'hyène',
+            audioFile: 'Hyène.mp3',
+            imageFile: 'Hyène.jpg'
+        },
+        {
+            correctAnswer: 'chèvre',
             audioFile: 'Chevre.mp3',
             imageFile: 'Chevre.jpg'
+        },
+        {
+            correctAnswer: 'paon',
+            audioFile: 'Paon.mp3',
+            imageFile: 'Paon.jpg'
         },
         {
             correctAnswer: 'cochon d\'inde',
@@ -27,16 +37,6 @@ document.addEventListener('DOMContentLoaded', () => {
             audioFile: 'Dindon.mp3',
             imageFile: 'Dindon.jpg'
         },
-        {
-            correctAnswer: 'hyène',
-            audioFile: 'Hyène.mp3',
-            imageFile: 'Hyène.jpg'
-        },
-        {
-            correctAnswer: 'paon',
-            audioFile: 'Paon.mp3',
-            imageFile: 'Paon.jpg'
-        }
         // Ajoutez d'autres animaux...
     ];
 
@@ -99,7 +99,7 @@ document.addEventListener('DOMContentLoaded', () => {
             feedbackText.style.color = 'green';
         } else {
             const hint = currentQuestion.correctAnswer.charAt(0).toUpperCase() + "...";
-            feedbackText.textContent = `Dommage ! C'était un ${hint}`;
+            feedbackText.textContent = `Dommage ! C'était un(e) ${hint}`;
             feedbackText.className = 'feedback-incorrect';
             feedbackText.style.color = 'red';
         }
@@ -124,8 +124,12 @@ document.addEventListener('DOMContentLoaded', () => {
         // Sauvegarde dans le localStorage
         try {
             const gameState = JSON.parse(localStorage.getItem('weddingGameData')) || {};
-            gameState.biologie = finalScore;
-            localStorage.setItem('weddingGameData', JSON.stringify(gameState));
+            const currentScore = gameState['biologie'];
+
+            if (currentScore === null || finalScore > currentScore) {
+                gameState['biologie'] = finalScore;
+                localStorage.setItem('weddingGameData', JSON.stringify(gameState));
+            }
         } catch (e) {
             console.error("Erreur sauvegarde score", e);
         }
