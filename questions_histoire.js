@@ -102,7 +102,7 @@ const questions = [
         image: "images/histoire/appart_grenoble.png"
     },
     {
-        date: "2024-06-25",
+        date: "2023-06-25",
         title: "On adopte un chat",
         description: "Pimousse la terreur !",
         image: "images/histoire/adoption_pimousse.png"
