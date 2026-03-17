@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Le grand spoil... - Aline & Felix</title>
+    <link rel="stylesheet" href="style-spoil.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Nunito:wght@400;700&display=swap"
+        rel="stylesheet">
+
+    <!-- Sécurité & Tracking -->
+    <script>const MIN_SCORE = 20;</script>
+    <script src="js/secure.js"></script>
+    <script src="js/tracking.js"></script>
+</head>
+
+<body>
+    <!-- Coins de page -->
+    <img src="images/top_left.png" alt="" class="corner top-left">
+    <img src="images/top_right.png" alt="" class="corner top-right">
+    <img src="images/bottom_left.png" alt="" class="corner bottom-left">
+    <img src="images/bottom_right.png" alt="" class="corner bottom-right">
+
+    <nav class="page-nav">
+        <a href="index.html" class="nav-link nav-icon" title="Accueil">
+            <img src="images/icones/home.png" alt="Accueil">
+        </a>
+        <a href="jeu.html" class="nav-link nav-icon" title="Retour aux épreuves">
+            <img src="images/icones/back2.png" alt="Retour">
+        </a>
+    </nav>
+
+    <div class="spoil-container">
+        <!-- Overlay avant clic -->
+        <div class="spoil-cover" id="spoilCover">
+            <h2>⚠️ Attention, grand spoil en vue !</h2>
+            <p style="font-size: 1.2rem; color: #5a4e49; margin-bottom: 30px; font-style: italic;">Êtes-vous sûr(e) de
+                vouloir vraiment voir ça ?</p>
+            <button class="spoil-btn" onclick="revealSpoiler()">Révéler le grand secret</button>
+        </div>
+
+        <!-- Contenu révélé -->
+        <div class="revealed-content" id="revealedContent">
+            <p>Le grand suspense prend fin...</p>
+            <h1>On va se dire OUI !</h1>
+            <p>Et on espère que vous serez là pour fêter ça !</p>
+        </div>
+
+        <!-- Conteneur généré par JS pour les confettis (optionnel) -->
+        <div class="confetti-container" id="confettiContainer"></div>
+    </div>
+
+    <!-- Mur des Vainqueurs -->
+    <div class="wall-section" id="wallSection" style="display: none;">
+        <div class="wall-header">
+            <h2>Le Mur des Vainqueurs</h2>
+            <p>Félicitations pour votre joli score de 20/20 ! Laissez-nous un petit mot ci-dessous :</p>
+        </div>
+        <div class="padlet-wrapper">
+            <!-- 
+              L'iframe Padlet va ici. 
+              Pour créer le vôtre gratuitement :
+              1. Allez sur padlet.com et créez un compte
+              2. Créez un Padlet "Mur"
+              3. Cliquez sur "Partager" -> "Intégrer dans votre blog ou site"
+              4. Copiez le code iframe et remplacez celui-ci :
+            -->
+            <div class="padlet-embed"
+                style="border:1px solid rgba(0,0,0,0.1);border-radius:2px;box-sizing:border-box;overflow:hidden;position:relative;width:100%;background:#F4F4F4">
+                <p style="padding:0;margin:0"><iframe src="https://padlet.com/embed/9j69lloah97gqcsj" frameborder="0"
+                        allow="camera;microphone;geolocation;display-capture;clipboard-write"
+                        style="width:100%;height:608px;display:block;padding:0;margin:0"></iframe></p>
+                <div style="display:flex;align-items:center;justify-content:end;margin:0;padding:8px 8px 8px 0"><a
+                        href="https://padlet.com?ref=embed"
+                        style="display:flex;align-items:center;gap:5px;flex-grow:0;margin:0;border:none;padding:0;text-decoration:none"
+                        target="_blank"><span aria-hidden
+                            style="color:#9E9E9E;font-size:10px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Oxygen,Ubuntu,Cantarell,sans-serif;line-height:1">Made
+                            with</span><img src="https://padlet.net/emails/padlet_email_logo_2026_text-dark-200.png"
+                            height="12"
+                            style="padding:0;margin:0;background:0 0;border:none;box-shadow:none;display:block"
+                            alt="Made with Padlet"></a></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Script de révélation -->
+    <script>
+        function revealSpoiler() {
+            // Cacher le cache spoiler
+            document.getElementById('spoilCover').classList.add('hidden');
+
+            // Montrer le texte "On va se dire oui"
+            setTimeout(() => {
+                document.getElementById('revealedContent').classList.add('visible');
+                createConfetti();
+
+                // Montrer le mur des vainqueurs après un court délai
+                setTimeout(() => {
+                    const wall = document.getElementById('wallSection');
+                    wall.style.display = 'block';
+                    wall.style.animation = 'fadeInUp 1s ease forwards';
+                }, 1500);
+            }, 300);
+        }
+
+        // Animation d'apparition du mur
+        const style = document.createElement('style');
+        style.innerHTML = `
+            @keyframes fadeInUp {
+                from { opacity: 0; transform: translateY(30px); }
+                to { opacity: 1; transform: translateY(0); }
+            }
+        `;
+        document.head.appendChild(style);
+
+        // Simple script de confettis
+        function createConfetti() {
+            const colors = ['#e91e63', '#9c27b0', '#ff9800', '#4caf50', '#03a9f4'];
+            const container = document.getElementById('confettiContainer');
+
+            for (let i = 0; i < 100; i++) {
+                const confetti = document.createElement('div');
+                confetti.style.position = 'absolute';
+                confetti.style.width = Math.random() * 10 + 5 + 'px';
+                confetti.style.height = Math.random() * 10 + 5 + 'px';
+                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.left = Math.random() * 100 + '%';
+                confetti.style.top = '-10px';
+                confetti.style.opacity = Math.random() + 0.5;
+                confetti.style.transform = 'rotate(' + Math.random() * 360 + 'deg)';
+                confetti.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
+
+                // Animation
+                const duration = Math.random() * 3 + 2;
+                confetti.style.transition = 'top ' + duration + 's ease-in, left ' + duration + 's ease-in-out, transform ' + duration + 's ease-in';
+
+                container.appendChild(confetti);
+
+                setTimeout(() => {
+                    confetti.style.top = '110%';
+                    confetti.style.left = (parseFloat(confetti.style.left) + (Math.random() * 20 - 10)) + '%';
+                    confetti.style.transform = 'rotate(' + (Math.random() * 720 + 360) + 'deg)';
+                }, 50);
+            }
+        }
+    </script>
+</body>
+
+</html>
