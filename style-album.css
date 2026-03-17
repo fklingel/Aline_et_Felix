@@ -132,6 +132,10 @@ header p {
     cursor: pointer;
 }
 
+.photo-card.no-caption {
+    padding-bottom: 15px;
+}
+
 .photo-card:hover {
     transform: scale(1.1) rotate(0deg) !important;
     /* Reset rotation on hover */

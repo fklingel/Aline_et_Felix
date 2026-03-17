@@ -236,6 +236,7 @@
         let gameSpeed = START_SPEED;
         let score = 0;
         let frameCount = 0;
+        let lastAccelFrame = 0;
         let gameState = 'START';
         let gameLoopId;
 
@@ -390,6 +391,7 @@
             score = 0;
             gameSpeed = START_SPEED;
             frameCount = 0;
+            lastAccelFrame = 0;
             scoreEl.innerText = '0';
             speedEl.innerText = '1.0';
 
@@ -484,12 +486,13 @@
             });
 
             if (gameState === 'PLAYING') {
-                frameCount++;
+                frameCount += dtScale;
                 // No floor here, keep float precision
                 score += (gameSpeed / 4) * 0.4 * dtScale;
                 scoreEl.innerText = Math.floor(score); // Display integer
 
-                if (frameCount % 600 === 0 && gameSpeed < MAX_SPEED) {
+                if (frameCount - lastAccelFrame >= 300 && gameSpeed < MAX_SPEED) {
+                    lastAccelFrame += 300;
                     gameSpeed += 0.2;
                     speedEl.innerText = (gameSpeed / START_SPEED).toFixed(1);
                 }

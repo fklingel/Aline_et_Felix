@@ -207,7 +207,7 @@
 
         <div id="hud" class="hidden">
             <div>SCORE: <span id="scoreVal">0</span></div>
-            <div>TEMPS: <span id="timeVal">40</span>s</div>
+            <div>TEMPS: <span id="timeVal">42</span>s</div>
         </div>
         <div id="comboDisplay" class="combo-box">COMBO x<span id="comboVal">0</span></div>
 
@@ -247,6 +247,10 @@
         // ==========================================
         const CHEMIN_MUSIQUE = '../audio/Caravan Palace - Wonderland.mp3';
         const BPM = 104;
+        const GAME_DURATION = 42; // Durée du jeu en secondes (facilement modifiable)
+        const SPEED_MULTIPLIER = 1; // Multiplicateur de vitesse pour rendre le jeu plus difficile
+        const SPAWN_FREQUENCY = 1.4; // Multiplicateur de fréquence d'apparition des notes (ex: 1.5 = 50% de notes en plus)
+        const SCORE_MULTIPLIER = 0.7; // Multiplicateur de score global (1.0 par défaut, ajusté à 1.3 pour la difficulté)
         // ==========================================
 
         const musicPlayer = new Audio(CHEMIN_MUSIQUE);
@@ -263,7 +267,7 @@
         let START_X = 0;
         let TARGET_Y = 500;
 
-        const ARROW_SPEED = (BPM / 60) * 200; // Pixels per sec
+        const ARROW_SPEED = (BPM / 60) * 200 * SPEED_MULTIPLIER; // Pixels per sec
         const SPAWN_Y = -150;
         const PERFECT_THRESHOLD = 40;
         const GOOD_THRESHOLD = 90;
@@ -273,7 +277,7 @@
         let particles = [];
         let score = 0;
         let combo = 0;
-        let timeLeft = 40;
+        let timeLeft = GAME_DURATION;
         let lastTime = 0;
         let spawnTimer = 0;
         let gameLoopId;
@@ -304,8 +308,8 @@
             typeBag: [],
 
             refillBags() {
-                // 1. Fill Spawn Bag (60% spawn rate)
-                this.spawnBag = [1, 1, 1, 1, 1, 1, 0, 0, 0, 0];
+                // 1. Fill Spawn Bag (80% spawn rate)
+                this.spawnBag = [1, 1, 1, 1, 1, 1, 1, 1, 0, 0];
                 this.spawnBag.sort(() => Math.random() - 0.5);
 
                 // 2. Fill Type Bag (15% Long Notes)
@@ -400,12 +404,14 @@
                         let points = 50;
                         let text = "BIEN";
                         let color = "#FFEB3B";
+                        let isPerfect = false;
 
                         if (dist < PERFECT_THRESHOLD) {
                             points = 100;
                             text = "PARFAIT";
                             color = "#00E676";
                             createExplosion(centerXForDir(dir), TARGET_Y, targetNote.color);
+                            isPerfect = true;
                         }
 
                         if (targetNote.isLong) {
@@ -415,8 +421,13 @@
                             targetNote.active = false; // Note simple finie
                         }
 
-                        score += Math.ceil((points + (combo * 5)) * 1.3);
-                        combo++;
+                        if (isPerfect) {
+                            score += Math.ceil((points + (combo * 5)) * SCORE_MULTIPLIER);
+                            combo++;
+                        } else {
+                            score += Math.ceil(points * SCORE_MULTIPLIER);
+                            // Le combo n'est ni incrémenté, ni réinitialisé
+                        }
 
                         triggerFeedback(text, color);
                         createSplashEffect(swimmers[0]);
@@ -662,7 +673,7 @@
 
             spawnTimer += dt;
             // Slightly faster spawn logic
-            const beatInterval = 60 / BPM;
+            const beatInterval = (60 / BPM) / SPAWN_FREQUENCY;
             if (spawnTimer >= beatInterval) {
                 spawnTimer -= beatInterval;
                 if (Game.getNextSpawn() === 1) Game.spawnNote();
@@ -697,7 +708,7 @@
                     // Score continu
                     // n.scoreTimer += dt;
                     // if (n.scoreTimer > 0.1) { ... score++ ... }
-                    score += Math.ceil(3 * dt * 60); // Reduced points * 1.25 Multiplier
+                    score += Math.ceil((3 * dt * 60) * SCORE_MULTIPLIER); // Points continus modifiés
 
                     // Effet visuel continu
                     if (Math.random() > 0.5) {
@@ -708,7 +719,7 @@
                     if (n.length <= 0) {
                         n.active = false;
                         n.isHeld = false; // STOP HOLDING to prevent multi-trigger
-                        score += 125; // Bonus fin (100 * 1.25)
+                        score += Math.ceil(125 * SCORE_MULTIPLIER); // Bonus de fin modifié
                         triggerFeedback("COOL", "#00E676");
                     }
 
@@ -969,7 +980,7 @@
             Game.refillBags(); // Init bags
             score = 0;
             combo = 0;
-            timeLeft = 40;
+            timeLeft = GAME_DURATION;
             notes = [];
             particles = [];
             spawnTimer = 0;

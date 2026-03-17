@@ -95,6 +95,10 @@ body {
     background-image: url('images/green_button.png');
 }
 
+.tab-btn.button-orange {
+    background-image: url('images/orange_button.png');
+}
+
 @media (max-width: 768px) {
     .tab-btn {
         width: 140px;
@@ -346,4 +350,28 @@ body {
     display: flex;
     align-items: center;
     gap: 10px;
+}
+
+/* FAQ */
+.faq-item {
+    background: rgba(255, 255, 255, 0.85);
+    padding: 20px 25px;
+    border-radius: 15px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+}
+
+.faq-item h3 {
+    font-family: 'Dancing Script', cursive;
+    font-size: 1.6rem;
+    color: #a1887f;
+    margin-top: 0;
+    margin-bottom: 10px;
+}
+
+.faq-item p {
+    font-size: 1.05rem;
+    color: #5a4e49;
+    line-height: 1.5;
+    margin: 0;
 }

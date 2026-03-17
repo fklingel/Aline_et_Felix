@@ -4,15 +4,15 @@ document.addEventListener('DOMContentLoaded', () => {
         // Remplissez vos 20 questions ici
         {
             audioFile: 'q1.mp3',
-            acceptedAnswers: ['star wars']
+            acceptedAnswers: ['star wars', 'marche impériale', 'la marche impériale']
         },
         {
             audioFile: 'q2.mp3',
-            acceptedAnswers: ['lacs du connemara','les lacs du connemara']
+            acceptedAnswers: ['lacs du connemara', 'les lacs du connemara']
         },
         {
             audioFile: 'q3.mp3',
-            acceptedAnswers: ['gimme gimme gimme','gimme']
+            acceptedAnswers: ['gimme gimme gimme', 'gimme']
         },
         {
             audioFile: 'q4.mp3',
