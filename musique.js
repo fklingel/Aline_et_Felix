@@ -16,11 +16,11 @@ document.addEventListener('DOMContentLoaded', () => {
         },
         {
             audioFile: 'q4.mp3',
-            acceptedAnswers: ['harry potter']
+            acceptedAnswers: ['harry potter', 'hedwig theme', "hedwig\'s theme"]
         },
         {
             audioFile: 'q5.mp3',
-            acceptedAnswers: ["les copains d'abord"]
+            acceptedAnswers: ["les copains d'abord", "copains d'abord", "les copains d abord", "copains d abord"]
         },
         {
             audioFile: 'q6.mp3',
@@ -40,7 +40,7 @@ document.addEventListener('DOMContentLoaded', () => {
         },
         {
             audioFile: 'q10.mp3',
-            acceptedAnswers: ["à l'horizontale"]
+            acceptedAnswers: ["à l'horizontale", "à l horizontale", "a l'horizontale", "a l horizontale"]
         },
         // ... etc.
     ];
