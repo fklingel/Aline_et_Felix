@@ -1,5 +1,9 @@
 /* style-spoil.css */
 
+* {
+    box-sizing: border-box;
+}
+
 body {
     font-family: 'Nunito', sans-serif;
     background-color: #F8F3E9;
@@ -76,6 +80,10 @@ body {
     .corner {
         width: 25vw;
         max-width: 120px;
+    }
+
+    .spoil-container {
+        padding: 30px 15px;
     }
 }
 
