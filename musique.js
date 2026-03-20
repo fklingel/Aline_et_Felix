@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
         },
         {
             audioFile: 'q3.mp3',
-            acceptedAnswers: ['gimme gimme gimme', 'gimme'],
+            acceptedAnswers: ['gimme gimme gimme', 'gimme', 'gimme! gimme! gimme!', 'gimme gimme gimme! gimme! (a man after midnight)', 'a man after midnight', 'Gimme! Gimme! Gimme! A Man After Midnight', 'Gimme Gimme Gimme A Man After Midnight', 'Gimme Gimme Gimme (A Man After Midnight)'],
             hint: 'Donne-moi'
         },
         {
