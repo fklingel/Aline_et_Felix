@@ -23,7 +23,7 @@ document.addEventListener('DOMContentLoaded', () => {
         },
         {
             audioFile: 'q5.mp3',
-            acceptedAnswers: ["les copains d'abord", "copains d'abord", "les copains d abord", "copains d abord"],
+            acceptedAnswers: ["les copains d\'abord", "copains d\'abord", "les copains d abord", "copains d abord"],
             hint: 'Pas le radeau'
         },
         {
@@ -48,7 +48,7 @@ document.addEventListener('DOMContentLoaded', () => {
         },
         {
             audioFile: 'q10.mp3',
-            acceptedAnswers: ["à l'horizontale", "à l horizontale", "a l'horizontale", "a l horizontale"],
+            acceptedAnswers: ["à l\'horizontale", "à l horizontale", "a l\'horizontale", "a l horizontale"],
             hint: 'Une position allongée...'
         }
     ];
