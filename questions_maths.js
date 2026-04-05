@@ -14,7 +14,7 @@ const questions = [
         answer: 10 // Exemple
     },
     {
-        text: "Trois amis débattent de la calvitie de Felix :\n \"Felix a plus de 10 000 cheveux sur la tête.\" \n \"Pas du tout, il a moins de 10 000 cheveux sur la tête, c'est certain.\" \n \"Je suis sûr que Felix a au moins un cheveu sur la tête.\" \n Sachant qu'un seul des trois amis a raison, combien de cheveux reste-t-il à Felix ?",
+        text: "Trois amis débattent de la calvitie de Felix :\n \"Felix a au moins 10 000 cheveux sur la tête.\" \n \"Pas du tout, il a moins de 10 000 cheveux sur la tête, c'est certain.\" \n \"Je suis sûr que Felix a au moins un cheveu sur la tête.\" \n Sachant qu'un seul des trois amis a raison, combien de cheveux reste-t-il à Felix ?",
         answer: 0 // Exemple
     },
     {
